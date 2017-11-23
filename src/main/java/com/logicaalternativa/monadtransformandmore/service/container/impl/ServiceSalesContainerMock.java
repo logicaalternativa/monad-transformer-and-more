@@ -3,12 +3,18 @@ package com.logicaalternativa.monadtransformandmore.service.container.impl;
 import com.logicaalternativa.monadtransformandmore.bean.Sales;
 import com.logicaalternativa.monadtransformandmore.container.Container;
 import com.logicaalternativa.monadtransformandmore.errors.Error;
+import com.logicaalternativa.monadtransformandmore.errors.impl.MyError;
 import com.logicaalternativa.monadtransformandmore.service.container.ServiceSalesContainer;
 
 public class ServiceSalesContainerMock implements ServiceSalesContainer<Error> {
 
 	@Override
 	public Container<Error, Sales> getSales( Integer bookId ) {
+		
+		if ( bookId > 999 ) {
+			
+			return Container.error(new MyError("Sales not found " + bookId) );
+		}
 		
 		final int salesId = 5000*bookId;
 		
@@ -17,7 +23,7 @@ public class ServiceSalesContainerMock implements ServiceSalesContainer<Error> {
 		
 		final Sales sales = new Sales(printed , numberSales );
 		
-		return Container.value(sales);
+		return Container.value( sales );
 		
 	}
 

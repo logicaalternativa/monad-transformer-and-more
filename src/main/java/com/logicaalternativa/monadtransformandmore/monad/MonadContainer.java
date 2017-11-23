@@ -1,13 +1,13 @@
 package com.logicaalternativa.monadtransformandmore.monad;
 
+import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
+
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.logicaalternativa.monadtransformandmore.container.Container;
 import com.logicaalternativa.monadtransformandmore.function.Function3;
-
-import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
 
 public interface MonadContainer<E> {
 	

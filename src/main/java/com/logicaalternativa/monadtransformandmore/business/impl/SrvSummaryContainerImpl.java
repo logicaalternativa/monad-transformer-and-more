@@ -1,5 +1,7 @@
 package com.logicaalternativa.monadtransformandmore.business.impl;
 
+import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
+
 import com.logicaalternativa.monadtransformandmore.bean.Summary;
 import com.logicaalternativa.monadtransformandmore.business.SrvSummaryContainer;
 import com.logicaalternativa.monadtransformandmore.container.Container;
@@ -9,9 +11,7 @@ import com.logicaalternativa.monadtransformandmore.service.container.ServiceBook
 import com.logicaalternativa.monadtransformandmore.service.container.ServiceChapterContainer;
 import com.logicaalternativa.monadtransformandmore.service.container.ServiceSalesContainer;
 
-import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
-
-public class SrvSummaryContainerImp<E> implements SrvSummaryContainer<E> {
+public class SrvSummaryContainerImpl<E> implements SrvSummaryContainer<E> {
 	
 	private final ServiceBookContainer<E> srvBook;
 	private final ServiceSalesContainer<E> srvSales;
@@ -21,7 +21,7 @@ public class SrvSummaryContainerImp<E> implements SrvSummaryContainer<E> {
 	private final MonadContainer<E> m;
 	
 
-	public SrvSummaryContainerImp(ServiceBookContainer<E> srvBook,
+	public SrvSummaryContainerImpl(ServiceBookContainer<E> srvBook,
 			ServiceSalesContainer<E> srvSales,
 			ServiceChapterContainer<E> srvChapter,
 			ServiceAuthorContainer<E> srvAuthor, MonadContainer<E> m) {

@@ -1,11 +1,12 @@
 package com.logicaalternativa.monadtransformandmore.monad.impl;
 
+import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
+
 import java.util.function.Function;
 
 import com.logicaalternativa.monadtransformandmore.container.Container;
 import com.logicaalternativa.monadtransformandmore.errors.Error;
 import com.logicaalternativa.monadtransformandmore.monad.MonadContainer;
-import static com.logicaalternativa.monadtransformandmore.util.Util.$_notYetImpl;
 
 public class MonadContainerError implements MonadContainer<Error> {
 
@@ -13,7 +14,7 @@ public class MonadContainerError implements MonadContainer<Error> {
 	public <T> Container<Error, T> pure(T value) {
 		
 		return $_notYetImpl();
-		
+			
 	}
 
 	@Override
