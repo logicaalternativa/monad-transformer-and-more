@@ -9,9 +9,9 @@ import com.logicaalternativa.monadtransformerandmore.service.container.ServiceCh
 public class ServiceChapterContainerMock implements ServiceChapterContainer<Error> {
 
 	@Override
-	public Container<Error, Chapter> getChapter(Long idChapter) {
+	public Container<Error, Chapter> getChapter(long idChapter) {
 		
-		if ( idChapter.equals(3005L) ) {
+		if ( Long.valueOf( idChapter ).equals(3005L) ) {
 			
 			return Container.error( new MyError( "Chapter not found " + idChapter ) );
 			

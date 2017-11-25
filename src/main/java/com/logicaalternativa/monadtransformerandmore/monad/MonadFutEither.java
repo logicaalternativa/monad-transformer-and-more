@@ -85,7 +85,7 @@ public interface MonadFutEither<E> {
 
 	}
 	
-	default <T> Future<Either<E, List<T>>> secuence( Future<Either<E, List<T>>> l ) {
+	default <T> Future<Either<E, List<T>>> sequence( Future<Either<E, List<T>>> l ) {
 
 		return $_notYetImpl();
 

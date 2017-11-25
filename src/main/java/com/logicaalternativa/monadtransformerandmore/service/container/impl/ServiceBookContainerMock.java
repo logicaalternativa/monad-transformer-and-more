@@ -14,7 +14,7 @@ import com.logicaalternativa.monadtransformerandmore.errors.Error;
 public class ServiceBookContainerMock implements ServiceBookContainer<Error>{
   
     @Override
-    public Container<Error, Book> getBook( Integer bookId ) {
+    public Container<Error, Book> getBook( int bookId ) {
     	
       if ( bookId < 0 ) {    	  
     	  return Container.error( new MyError("Book not found " + bookId) );

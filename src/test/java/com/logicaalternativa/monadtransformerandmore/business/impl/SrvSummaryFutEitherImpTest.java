@@ -73,7 +73,7 @@ public class SrvSummaryFutEitherImpTest {
 	@Before
 	public void setUp() throws Exception {
 			
-		srvSummary = new SrvSummaryFutureEitherImpl<Error>(srvBook, srvSales,
+		srvSummary = new SrvSummaryFutureEitherImpl(srvBook, srvSales,
 				srvChapter, srvAuthor, m);
 	}
 

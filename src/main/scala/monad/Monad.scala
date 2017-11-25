@@ -36,6 +36,6 @@ trait Monad[E, P[_]] {
   
   def map3[A,B,C,T]( fromA : A, fromB :B, fromC :C, f : JFunction3[A,B,C,T] ) : P[T] = ???
   
-  def secuence[T]( l : JList[P[T]]  ) : P[JList[T]] =  ???
+  def sequence[T]( l : JList[P[T]]  ) : P[JList[T]] =  ???
   
 }

@@ -1,10 +1,15 @@
 package com.logicaalternativa.monadtransformerandmore.business.impl;
 
 import scala.concurrent.Future;
+import scala.concurrent.Promise;
 import scala.util.Either;
+import akka.dispatch.ExecutionContexts;
+import akka.dispatch.Futures;
 
+import com.logicaalternativa.monadtransformerandmore.bean.Java8;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEither;
+import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.monad.MonadFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceAuthorFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceBookFutEither;
@@ -12,22 +17,23 @@ import com.logicaalternativa.monadtransformerandmore.service.future.ServiceChapt
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceSalesFutEither;
 
 import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
+import static com.logicaalternativa.monadtransformerandmore.bean.Java8.*;
 
-public class SrvSummaryFutureEitherImpl<E> implements SrvSummaryFutureEither<E> {
+public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error> {
 
-	private final ServiceBookFutEither<E> srvBook;
-	private final ServiceSalesFutEither<E> srvSales;
-	private final ServiceChapterFutEither<E> srvChapter;
-	private final ServiceAuthorFutEither<E> srvAuthor;
+	private final ServiceBookFutEither<Error> srvBook;
+	private final ServiceSalesFutEither<Error> srvSales;
+	private final ServiceChapterFutEither<Error> srvChapter;
+	private final ServiceAuthorFutEither<Error> srvAuthor;
 	
-	private final MonadFutEither<E> m;
+	private final MonadFutEither<Error> m;
 	
 	
-	public SrvSummaryFutureEitherImpl(ServiceBookFutEither<E> srvBook,
-			ServiceSalesFutEither<E> srvSales,
-			ServiceChapterFutEither<E> srvChapter,
-			ServiceAuthorFutEither<E> srvAuthor,
-			MonadFutEither<E> m) {
+	public SrvSummaryFutureEitherImpl(ServiceBookFutEither<Error> srvBook,
+			ServiceSalesFutEither<Error> srvSales,
+			ServiceChapterFutEither<Error> srvChapter,
+			ServiceAuthorFutEither<Error> srvAuthor,
+			MonadFutEither<Error> m) {
 		super();
 		this.srvBook = srvBook;
 		this.srvSales = srvSales;
@@ -37,7 +43,7 @@ public class SrvSummaryFutureEitherImpl<E> implements SrvSummaryFutureEither<E> 
 	}
 
 	@Override
-	public Future<Either<E, Summary>> getSummary(Integer idBook) {
+	public Future<Either<Error, Summary>> getSummary(Integer idBook) {
 		
 		return $_notYetImpl();
 	}

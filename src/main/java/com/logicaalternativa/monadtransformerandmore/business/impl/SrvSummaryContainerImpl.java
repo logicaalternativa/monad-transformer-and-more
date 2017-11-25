@@ -10,21 +10,22 @@ import com.logicaalternativa.monadtransformerandmore.service.container.ServiceAu
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBookContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceChapterContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceSalesContainer;
+import com.logicaalternativa.monadtransformerandmore.errors.Error;
 
-public class SrvSummaryContainerImpl<E> implements SrvSummaryContainer<E> {
+public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 	
-	private final ServiceBookContainer<E> srvBook;
-	private final ServiceSalesContainer<E> srvSales;
-	private final ServiceChapterContainer<E> srvChapter;
-	private final ServiceAuthorContainer<E> srvAuthor;
+	private final ServiceBookContainer<Error> srvBook;
+	private final ServiceSalesContainer<Error> srvSales;
+	private final ServiceChapterContainer<Error> srvChapter;
+	private final ServiceAuthorContainer<Error> srvAuthor;
 	
-	private final MonadContainer<E> m;
+	private final MonadContainer<Error> m;
 	
 
-	public SrvSummaryContainerImpl(ServiceBookContainer<E> srvBook,
-			ServiceSalesContainer<E> srvSales,
-			ServiceChapterContainer<E> srvChapter,
-			ServiceAuthorContainer<E> srvAuthor, MonadContainer<E> m) {
+	public SrvSummaryContainerImpl(ServiceBookContainer<Error> srvBook,
+			ServiceSalesContainer<Error> srvSales,
+			ServiceChapterContainer<Error> srvChapter,
+			ServiceAuthorContainer<Error> srvAuthor, MonadContainer<Error> m) {
 		super();
 		this.srvBook = srvBook;
 		this.srvSales = srvSales;
@@ -36,7 +37,7 @@ public class SrvSummaryContainerImpl<E> implements SrvSummaryContainer<E> {
 
 
 	@Override
-	public Container<E, Summary> getSummary(Integer idBook) {
+	public Container<Error, Summary> getSummary(Integer idBook) {
 		
 		return $_notYetImpl();
 		

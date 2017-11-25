@@ -83,7 +83,7 @@ public interface MonadContainer<E> {
 
 	}
 	
-	default <T> Container<E, List<T>> secuence( Container<E, List<T>> l ) {
+	default <T> Container<E, List<T>> sequence( Container<E, List<T>> l ) {
 
 		return $_notYetImpl();
 

@@ -34,7 +34,7 @@ import com.logicaalternativa.monadtransformerandmore.service.container.impl.Serv
 
 public class SrvSummaryContainerImpTest {
 
-	private SrvSummaryContainerImpl<Error> srvSummary;
+	private SrvSummaryContainerImpl srvSummary;
 
 	private final ServiceBookContainer<Error> srvBook = new ServiceBookContainerMock();
 	private final ServiceSalesContainer<Error> srvSales = new ServiceSalesContainerMock();
@@ -48,7 +48,7 @@ public class SrvSummaryContainerImpTest {
 	@Before
 	public void setUp() throws Exception {
 
-		srvSummary = new SrvSummaryContainerImpl<Error>(srvBook, srvSales,
+		srvSummary = new SrvSummaryContainerImpl(srvBook, srvSales,
 				srvChapter, srvAuthor, m);
 	}
 

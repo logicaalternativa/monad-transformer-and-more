@@ -11,6 +11,8 @@ trait SrvSummaryF[E,P[_]] {
   
   implicit val E : Monad[E,P]
   
+  import E._
+  
   val srvBook : ServiceBookF[E,P]
   val srvSales : ServiceSalesF[E,P]
   val srvChapter : ServiceChapterF[E,P]

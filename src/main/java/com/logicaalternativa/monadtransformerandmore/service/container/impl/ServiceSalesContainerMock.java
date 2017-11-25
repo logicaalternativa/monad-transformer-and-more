@@ -9,7 +9,7 @@ import com.logicaalternativa.monadtransformerandmore.service.container.ServiceSa
 public class ServiceSalesContainerMock implements ServiceSalesContainer<Error> {
 
 	@Override
-	public Container<Error, Sales> getSales( Integer bookId ) {
+	public Container<Error, Sales> getSales( int bookId ) {
 		
 		if ( bookId > 999 ) {
 			
