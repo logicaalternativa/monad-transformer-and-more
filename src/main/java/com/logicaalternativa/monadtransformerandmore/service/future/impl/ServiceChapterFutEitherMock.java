@@ -15,7 +15,7 @@ public class ServiceChapterFutEitherMock extends ServiceFutEitherBase implements
 	final ServiceChapterContainer<Error> srv = new ServiceChapterContainerMock();
 
 	@Override
-	public Future<Either<Error, Chapter>> getChapter(Long idChapter) {
+	public Future<Either<Error, Chapter>> getChapter(long idChapter) {
 		
 		return createFuture( () -> srv.getChapter( idChapter ) );
 		

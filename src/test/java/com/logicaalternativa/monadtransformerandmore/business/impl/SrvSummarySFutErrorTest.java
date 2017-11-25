@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import scala.concurrent.Await;
-import scala.concurrent.ExecutionContext;
+import scala.concurrent.ExecutionContextExecutor;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 import scala.util.Either;
@@ -26,15 +26,11 @@ import com.logicaalternativa.monadtransformerandmore.bean.Book;
 import com.logicaalternativa.monadtransformerandmore.bean.Chapter;
 import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
+import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryF;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEither;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.monad.MonadFutEither;
-import com.logicaalternativa.monadtransformerandmore.monad.container.MonadContainerErrorS;
 import com.logicaalternativa.monadtransformerandmore.monad.impl.MonadFutEitherError;
-import com.logicaalternativa.monadtransformerandmore.service.ServiceAuthorF;
-import com.logicaalternativa.monadtransformerandmore.service.ServiceBookF;
-import com.logicaalternativa.monadtransformerandmore.service.ServiceChapterF;
-import com.logicaalternativa.monadtransformerandmore.service.ServiceSalesF;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceAuthorContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBookContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceChapterContainer;
@@ -52,15 +48,14 @@ import com.logicaalternativa.monadtransformerandmore.service.future.impl.Service
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceChapterFutEitherMock;
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceSalesFutEitherMock;
 
-public class SrvSummaryFutEitherImpTest {
+public class SrvSummarySFutErrorTest {
 
-	private SrvSummaryFutureEither<Error> srvSummary;
+	private SrvSummaryF<Error,Future> srvSummary;
 
 	private final ServiceBookFutEither<Error> srvBook = new ServiceBookFutEitherMock();
 	private final ServiceSalesFutEither<Error> srvSales = new ServiceSalesFutEitherMock();
 	private final ServiceChapterFutEither<Error> srvChapter = new ServiceChapterFutEitherMock();
 	private final ServiceAuthorFutEither<Error> srvAuthor = new ServiceAuthorFutEitherMock();
-	private final MonadFutEither<Error> m = new MonadFutEitherError( ExecutionContexts.global() );
 	
 	private final ServiceChapterContainer<Error> srvChapterCheck = new ServiceChapterContainerMock();
 	private final ServiceBookContainer<Error> srvBookCheck = new ServiceBookContainerMock();
@@ -72,9 +67,12 @@ public class SrvSummaryFutEitherImpTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-			
-		srvSummary = new SrvSummaryFutureEitherImpl<Error>(srvBook, srvSales,
-				srvChapter, srvAuthor, m);
+		
+		ExecutionContextExecutor ec = ExecutionContexts.global();		
+		
+		srvSummary = SrvSummarySFutError.apply(srvBook, srvSales, srvChapter, srvAuthor, ec);
+		
+		
 	}
 
 	/**
@@ -101,10 +99,9 @@ public class SrvSummaryFutEitherImpTest {
 		final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
 
 		// When
-		final Future<Either<Error, Summary>> summaryFu = srvSummary
-				.getSummary(bookId);
+		final Future summaryFu = srvSummary.getSummary(bookId);
 		
-		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
 
 		// Then
 		final Summary summary = res.right().get();
@@ -133,10 +130,9 @@ public class SrvSummaryFutEitherImpTest {
 		final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
 
 		// When
-		final Future<Either<Error, Summary>> summaryFu = srvSummary
-				.getSummary(bookId);
+		final Future summaryFu = srvSummary.getSummary(bookId);
 		
-		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
 
 		// Then
 		final Summary summary = res.right().get();
@@ -174,10 +170,10 @@ public class SrvSummaryFutEitherImpTest {
 	private void testErrorGeneric( final Integer bookId ) throws Exception {
 		
 		// When
-		final Future<Either<Error, Summary>> summaryFu = srvSummary
+		final Future summaryFu = srvSummary
 				.getSummary(bookId);
 		
-		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
 
 
 		// Then

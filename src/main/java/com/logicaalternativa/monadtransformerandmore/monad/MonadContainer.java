@@ -39,6 +39,13 @@ public interface MonadContainer<E> {
 
 	}
 
+
+	default <T> Container<E, T> flatten( Container<E, Container<E, T>> from ) {
+
+		return $_notYetImpl();
+
+	}
+
 	default <A,B,T> Container<E, T> flapMap2( Container<E, A> fromA, 
 			Container<E, B> fromB, 
 			BiFunction<A,B,Container<E, T>> f  ) {

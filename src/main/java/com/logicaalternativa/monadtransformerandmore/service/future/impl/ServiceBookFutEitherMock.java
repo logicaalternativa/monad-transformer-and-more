@@ -14,7 +14,7 @@ public class ServiceBookFutEitherMock extends ServiceFutEitherBase implements Se
 	final ServiceBookContainer<Error> srv = new ServiceBookContainerMock();
 
 	@Override
-	public Future<Either<Error, Book>> getBook( final Integer bookId) {
+	public Future<Either<Error, Book>> getBook( final int bookId) {
 		
 		return createFuture( () -> srv.getBook( bookId ) );
 	}

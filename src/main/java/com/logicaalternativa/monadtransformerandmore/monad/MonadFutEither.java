@@ -27,7 +27,7 @@ public interface MonadFutEither<E> {
 	<A,T> Future<Either<E,T>> recoverWith( Future<Either<E, A>> from, Function<E, Future<Either<E,T>>> f );
 
 	/**
-	 * Derived
+	 * Deriveds
 	 */
 
 	default <A,T> Future<Either<E,T>> map( Future<Either<E, A>> from, Function<A, T> f ) {
@@ -37,6 +37,12 @@ public interface MonadFutEither<E> {
 	}
 
 	default <T> Future<Either<E,T>> recover( Future<Either<E,T>> from, Function<E, T> f ) {
+
+		return $_notYetImpl();
+
+	}
+	
+	default <T> Future<Either<E,T>> flatten( Future<Either<E,Future<Either<E,T>>>> from ) {
 
 		return $_notYetImpl();
 

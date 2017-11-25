@@ -14,7 +14,7 @@ public class ServiceSalesFutEitherMock extends ServiceFutEitherBase implements S
 	final ServiceSalesContainer<Error> srv = new ServiceSalesContainerMock();
 
 	@Override
-	public Future<Either<Error, Sales>> getSales(Integer bookId) {
+	public Future<Either<Error, Sales>> getSales(int bookId) {
 		
 		return createFuture( () -> srv.getSales( bookId ) );
 	}
