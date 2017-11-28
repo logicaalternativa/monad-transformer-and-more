@@ -21,7 +21,7 @@ public interface MonadContainer<E> {
 	
 	<T> Container<E, T> raiseError( E error );
 	
-	<A,T> Container<E, T> recoverWith( Container<E, A> from, Function<E, Container<E, T>> f );
+	<T> Container<E, T> recoverWith( Container<E, T> from, Function<E, Container<E, T>> f );
 
 	/**
 	 * Derived
@@ -46,7 +46,7 @@ public interface MonadContainer<E> {
 
 	}
 
-	default <A,B,T> Container<E, T> flapMap2( Container<E, A> fromA, 
+	default <A,B,T> Container<E, T> flatMap2( Container<E, A> fromA, 
 			Container<E, B> fromB, 
 			BiFunction<A,B,Container<E, T>> f  ) {
 
@@ -65,7 +65,7 @@ public interface MonadContainer<E> {
 	}
 
 
-	default <A,B,C,T> Container<E, T> flapMap3( Container<E, A> fromA, 
+	default <A,B,C,T> Container<E, T> flatMap3( Container<E, A> fromA, 
 			Container<E, B> fromB, 
 			Container<E, C> fromC, 
 			Function3<A,B,C,Container<E, T>> f  ) {

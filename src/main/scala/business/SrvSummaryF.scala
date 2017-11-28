@@ -7,6 +7,8 @@ import service._
 
 import monad.syntax.Implicits._
 
+import java.util.Optional
+
 trait SrvSummaryF[E,P[_]] {
   
   implicit val E : Monad[E,P]

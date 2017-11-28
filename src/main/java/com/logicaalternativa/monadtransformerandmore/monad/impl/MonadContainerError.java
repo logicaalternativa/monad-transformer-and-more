@@ -32,7 +32,7 @@ public class MonadContainerError implements MonadContainer<Error> {
 	}
 
 	@Override
-	public <A, T> Container<Error, T> recoverWith(Container<Error, A> from,
+	public <T> Container<Error, T> recoverWith(Container<Error, T> from,
 			Function<Error, Container<Error, T>> f) {
 		
 		return $_notYetImpl();

@@ -16,7 +16,7 @@ trait Monad[E, P[_]] {
   
   def raiseError[T] ( error: E ) : P[T]
 
-  def recoverWith[A,T]( from : P[A], f : JFunction[E, P[T]] ) : P[T]
+  def recoverWith[T]( from : P[T], f : JFunction[E, P[T]] ) : P[T]
 
   /**
    * Derived

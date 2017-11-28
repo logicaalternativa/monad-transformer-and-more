@@ -33,7 +33,7 @@ class MonadFutEitherS(implicit ec : ExecutionContext ) extends Monad[Error, FutE
   
   def raiseError[T] ( error: Error ) : FutEitherError[T] = ???
 
-  def recoverWith[A,T]( from : FutEitherError[A], f : JFunction[Error, FutEitherError[T]] ) : FutEitherError[T] = ???
+  def recoverWith[T]( from : FutEitherError[T], f : JFunction[Error, FutEitherError[T]] ) : FutEitherError[T] = ???
  
   
 }

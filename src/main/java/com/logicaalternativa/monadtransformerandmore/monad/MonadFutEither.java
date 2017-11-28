@@ -24,7 +24,7 @@ public interface MonadFutEither<E> {
 	
 	<T> Future<Either<E,T>> raiseError( E error );
 	
-	<A,T> Future<Either<E,T>> recoverWith( Future<Either<E, A>> from, Function<E, Future<Either<E,T>>> f );
+	<T> Future<Either<E,T>> recoverWith( Future<Either<E, T>> from, Function<E, Future<Either<E,T>>> f );
 
 	/**
 	 * Deriveds
@@ -48,7 +48,7 @@ public interface MonadFutEither<E> {
 
 	}
 
-	default <A,B,T> Future<Either<E,T>> flapMap2( Future<Either<E, A>> fromA, 
+	default <A,B,T> Future<Either<E,T>> flatMap2( Future<Either<E, A>> fromA, 
 			Future<Either<E, B>> fromB, 
 			BiFunction<A,B,Future<Either<E,T>>> f  ) {
 
@@ -67,7 +67,7 @@ public interface MonadFutEither<E> {
 	}
 
 
-	default <A,B,C,T> Future<Either<E,T>> flapMap3( Future<Either<E, A>> fromA, 
+	default <A,B,C,T> Future<Either<E,T>> flatMap3( Future<Either<E, A>> fromA, 
 			Future<Either<E, B>> fromB, 
 			Future<Either<E, C>> fromC, 
 			Function3<A,B,C,Future<Either<E,T>>> f  ) {

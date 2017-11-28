@@ -27,6 +27,6 @@ class MonadContainerErrorS extends Monad[Error, ContainerError] {
   
   def raiseError[T] ( error: Error ) : ContainerError[T] = ???
 
-  def recoverWith[A,T]( from : ContainerError[A], f : JFunction[Error, ContainerError[T]] ) : ContainerError[T] = ???
+  def recoverWith[T]( from : ContainerError[T], f : JFunction[Error, ContainerError[T]] ) : ContainerError[T] = ???
   
 }
