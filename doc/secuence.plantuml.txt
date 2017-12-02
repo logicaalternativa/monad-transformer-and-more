@@ -4,6 +4,8 @@ start
 fork
  :Get book by id book;
  fork
+  :Add book data;
+ fork again
   :Get author by id author;
  fork again
   while (For every id chapter)
