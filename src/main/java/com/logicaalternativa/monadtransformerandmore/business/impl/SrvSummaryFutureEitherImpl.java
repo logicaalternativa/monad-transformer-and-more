@@ -6,7 +6,6 @@ import scala.util.Either;
 import akka.dispatch.ExecutionContexts;
 import akka.dispatch.Futures;
 
-import com.logicaalternativa.monadtransformerandmore.bean.Java8;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEither;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
@@ -15,9 +14,10 @@ import com.logicaalternativa.monadtransformerandmore.service.future.ServiceAutho
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceBookFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceChapterFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceSalesFutEither;
+import com.logicaalternativa.monadtransformerandmore.util.Java8;
 
+import static com.logicaalternativa.monadtransformerandmore.util.Java8.*;
 import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
-import static com.logicaalternativa.monadtransformerandmore.bean.Java8.*;
 
 public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error> {
 

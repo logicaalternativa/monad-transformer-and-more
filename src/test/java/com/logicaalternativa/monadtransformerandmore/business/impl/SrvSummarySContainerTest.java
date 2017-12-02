@@ -13,15 +13,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import scala.concurrent.Future;
-
 import com.logicaalternativa.monadtransformerandmore.bean.Author;
 import com.logicaalternativa.monadtransformerandmore.bean.Book;
 import com.logicaalternativa.monadtransformerandmore.bean.Chapter;
 import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryF;
-import com.logicaalternativa.monadtransformerandmore.business.impl.SrvSummaryContainerImpl;
 import com.logicaalternativa.monadtransformerandmore.container.Container;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.monad.MonadContainer;
@@ -37,6 +34,7 @@ import com.logicaalternativa.monadtransformerandmore.service.container.impl.Serv
 
 public class SrvSummarySContainerTest {
 
+	@SuppressWarnings("rawtypes")
 	private  SrvSummaryF<Error,Container> srvSummary;
 
 	private final ServiceBookContainer<Error> srvBook = new ServiceBookContainerMock();

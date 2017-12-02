@@ -43,8 +43,9 @@ manera síncrona o asíncrona, y con perfecta integración con código
 
 ## Requisitos ##
 
-Para que funcione tienes que tener instalado **maven**, y opcional para
-mayor comodidad que tu IDE tenga soporte a **Scala**.
+Para que funcione tienes que tener instalado **maven**, y si lo 
+prefieres, para tu mayor comodidad, que tu IDE tenga soporte a 
+**Scala**.
 
 ## Esquema de composición de la información ##
 
@@ -57,4 +58,5 @@ Intenta que pasen todos los test, ejecutando.
 ```
 mvn clean test
 ```
+Recuerda que deberás tener en cuenta el control de errores.
 

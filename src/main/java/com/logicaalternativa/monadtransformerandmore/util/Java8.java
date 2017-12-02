@@ -1,16 +1,17 @@
-package com.logicaalternativa.monadtransformerandmore.bean;
+package com.logicaalternativa.monadtransformerandmore.util;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import akka.dispatch.Mapper;
 import akka.dispatch.OnComplete;
+import akka.dispatch.Recover;
 
 public final class Java8 {
 	
 	private Java8(){}
 	
-	public static <T, R>  Mapper<T, R> mapperF(  Function<T,R> f  ){
+	public static <T, R>  Mapper<T, R> mapperF( Function<T,R> f  ){
 		
 		return new Mapper<T, R>() {
 
@@ -18,7 +19,6 @@ public final class Java8 {
 			public R apply(T parameter) {
 				return f.apply(parameter);
 			}
-			
 			
 		};
 		
@@ -33,9 +33,22 @@ public final class Java8 {
 				
 				bi.accept(throwable, value );
 				
-				
 			}
 		};		
+		
+	}
+	
+	public static <T> Recover<T> recoverF( Function<Throwable, T> f ){		
+		
+		return new Recover<T>() {
+
+			@Override
+			public T recover(Throwable t ) throws Throwable {
+				
+				return f.apply( t );
+				
+			}
+		};
 		
 	}
 
