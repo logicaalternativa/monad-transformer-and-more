@@ -12,6 +12,11 @@ fork
  end fork
 fork again
  :Get sales by id book;
+ if ( exits sales? ) then (yes) 
+  : add info sales;
+ else (no)
+  : empty;
+ endif
 end fork
 stop
 @enduml
