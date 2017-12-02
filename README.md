@@ -39,3 +39,6 @@ declarativa de una manera elegante independiente de si se trabaja de
 manera síncrona o asíncrona, y con perfecta integración con código 
 **Java**.
 
+# Esquema de composición de la información #
+
+![Esquema]( ./doc/secuence.plantuml.svg )

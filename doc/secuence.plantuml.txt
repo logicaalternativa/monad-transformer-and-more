@@ -1,0 +1,17 @@
+@startuml
+@startuml
+start
+fork
+ :Get book by id book;
+ fork
+  :Get author by id author;
+ fork again
+  while (For every id chapter)
+  :Get chapter by id;
+  endwhile
+ end fork
+fork again
+ :Get sales by id book;
+end fork
+stop
+@enduml
