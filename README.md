@@ -39,6 +39,22 @@ declarativa de una manera elegante independiente de si se trabaja de
 manera síncrona o asíncrona, y con perfecta integración con código 
 **Java**.
 
-# Esquema de composición de la información #
+# El ejercicio #
+
+## Requisitos ##
+
+Para que funcione tienes que tener instalado **maven**, y opcional para
+mayor comodidad que tu IDE tenga soporte a **Scala**.
+
+## Esquema de composición de la información ##
 
 ![Esquema]( ./doc/secuence.plantuml.svg )
+
+## El reto ##
+
+Intenta que pasen todos los test, ejecutando.
+
+```
+mvn clean test
+```
+
