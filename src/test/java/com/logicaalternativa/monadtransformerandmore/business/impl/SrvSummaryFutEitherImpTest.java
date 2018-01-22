@@ -110,7 +110,7 @@ public class SrvSummaryFutEitherImpTest {
 		final Summary summary = res.right().get();
 
 		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( Optional.of(expectedSales), summary.getSales().get() );
+		assertEquals( Optional.of(expectedSales), summary.getSales() );
 		assertEquals( expectedAuthor, summary.getAuthor() );
 		assertEquals( expectedChapters, summary.getChapter());
 

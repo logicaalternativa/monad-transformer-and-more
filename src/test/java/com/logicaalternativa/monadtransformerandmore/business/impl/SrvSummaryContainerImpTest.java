@@ -83,7 +83,7 @@ public class SrvSummaryContainerImpTest {
 		final Summary summary = summaryC.getValue();
 
 		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( Optional.of(expectedSales), summary.getSales().get() );
+		assertEquals( Optional.of(expectedSales), summary.getSales() );
 		assertEquals( expectedAuthor, summary.getAuthor() );
 		assertEquals( expectedChapters, summary.getChapter());
 
