@@ -21,7 +21,7 @@ public class ServiceBookContainerMock implements ServiceBookContainer<Error>{
       }
       
       final String nameBook = "Book " + bookId;
-      final String idAuthor = "author-book- " + bookId;      
+      final String idAuthor = "author-book-" + bookId;      
       
       final Long base =  bookId * 1000L;      
       final List<Long> chapters  = Arrays.asList( 
