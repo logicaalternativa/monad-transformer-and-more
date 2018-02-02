@@ -2,6 +2,7 @@ package com.logicaalternativa.monadtransformerandmore.monad;
 
 import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -85,7 +86,13 @@ public interface MonadFutEither<E> {
 
 	}
 	
-	default <T> Future<Either<E, List<T>>> sequence( Future<Either<E, List<T>>> l ) {
+	default <T> Future<Either<E, List<T>>> sequence( List<Future<Either<E, T>>> l ) {
+
+		return $_notYetImpl();
+
+	}
+	
+	default <T> Future<Either<E, List<T>>> sequence( Iterator <Future<Either<E, T>>> i ) {
 
 		return $_notYetImpl();
 
