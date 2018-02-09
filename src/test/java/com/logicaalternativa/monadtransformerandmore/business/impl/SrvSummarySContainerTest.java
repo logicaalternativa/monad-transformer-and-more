@@ -21,8 +21,6 @@ import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryF;
 import com.logicaalternativa.monadtransformerandmore.container.Container;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
-import com.logicaalternativa.monadtransformerandmore.monad.MonadContainer;
-import com.logicaalternativa.monadtransformerandmore.monad.impl.MonadContainerError;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceAuthorContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBookContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceChapterContainer;
@@ -41,8 +39,7 @@ public class SrvSummarySContainerTest {
 	private final ServiceSalesContainer<Error> srvSales = new ServiceSalesContainerMock();
 	private final ServiceChapterContainer<Error> srvChapter = new ServiceChapterContainerMock();
 	private final ServiceAuthorContainer<Error> srvAuthor = new ServiceAuthorContainerMock();
-	private final MonadContainer<Error> m = new MonadContainerError();
-
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -91,7 +88,7 @@ public class SrvSummarySContainerTest {
 		final Summary summary = summaryC.getValue();
 
 		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( Optional.of(expectedSales), summary.getSales().get() );
+		assertEquals( Optional.of(expectedSales), summary.getSales() );
 		assertEquals( expectedAuthor, summary.getAuthor() );
 		assertEquals( expectedChapters, summary.getChapter());
 

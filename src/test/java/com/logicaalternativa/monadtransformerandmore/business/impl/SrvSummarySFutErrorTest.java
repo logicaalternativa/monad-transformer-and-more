@@ -3,6 +3,7 @@
  */
 package com.logicaalternativa.monadtransformerandmore.business.impl;
 
+import static com.logicaalternativa.monadtransformerandmore.business.impl.SrvSummarySFutError.dsl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -27,10 +28,7 @@ import com.logicaalternativa.monadtransformerandmore.bean.Chapter;
 import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryF;
-import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEither;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
-import com.logicaalternativa.monadtransformerandmore.monad.MonadFutEither;
-import com.logicaalternativa.monadtransformerandmore.monad.impl.MonadFutEitherError;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceAuthorContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBookContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceChapterContainer;
@@ -48,10 +46,9 @@ import com.logicaalternativa.monadtransformerandmore.service.future.impl.Service
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceChapterFutEitherMock;
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceSalesFutEitherMock;
 
-import static com.logicaalternativa.monadtransformerandmore.business.impl.SrvSummarySFutError.dsl;
-
 public class SrvSummarySFutErrorTest {
 
+	@SuppressWarnings("rawtypes")
 	private SrvSummaryF<Error,Future> srvSummary;
 
 	private final ServiceBookFutEither<Error> srvBook = new ServiceBookFutEitherMock();
@@ -91,6 +88,7 @@ public class SrvSummarySFutErrorTest {
 	public void tearDown() throws Exception {
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void happyPath() throws Exception {
 		
@@ -116,7 +114,7 @@ public class SrvSummarySFutErrorTest {
 		final Summary summary = res.right().get();
 
 		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( Optional.of(expectedSales), summary.getSales().get() );
+		assertEquals( Optional.of(expectedSales), summary.getSales() );
 		assertEquals( expectedAuthor, summary.getAuthor() );
 		assertEquals( expectedChapters, summary.getChapter());
 
@@ -124,6 +122,7 @@ public class SrvSummarySFutErrorTest {
 	
 
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void happyPathWOSales() throws Exception {
 		
@@ -176,6 +175,7 @@ public class SrvSummarySFutErrorTest {
 		
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void testErrorGeneric( final Integer bookId ) throws Exception {
 		
 		// When
