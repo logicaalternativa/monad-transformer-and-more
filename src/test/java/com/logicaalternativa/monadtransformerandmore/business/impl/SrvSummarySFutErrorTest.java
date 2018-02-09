@@ -48,6 +48,8 @@ import com.logicaalternativa.monadtransformerandmore.service.future.impl.Service
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceChapterFutEitherMock;
 import com.logicaalternativa.monadtransformerandmore.service.future.impl.ServiceSalesFutEitherMock;
 
+import static com.logicaalternativa.monadtransformerandmore.business.impl.SrvSummarySFutError.dsl;
+
 public class SrvSummarySFutErrorTest {
 
 	private SrvSummaryF<Error,Future> srvSummary;
@@ -68,9 +70,16 @@ public class SrvSummarySFutErrorTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		ExecutionContextExecutor ec = ExecutionContexts.global();		
+		final ExecutionContextExecutor ec = ExecutionContexts.global();		
 		
-		srvSummary = SrvSummarySFutError.apply(srvBook, srvSales, srvChapter, srvAuthor, ec);
+		// srvSummary = SrvSummarySFutError.apply(srvBook, srvSales, srvChapter, srvAuthor, ec);
+		
+		srvSummary = dsl(ec)
+				.withSrvBook( idBook -> srvBook.getBook( idBook ) )
+				.withSrvSales(sales -> srvSales.getSales( sales ) )
+				.withSrvChapter( chapter -> srvChapter.getChapter( chapter ) )
+				.build( idAuthor ->  srvAuthor.getAuthor( idAuthor )) 
+				;
 		
 		
 	}

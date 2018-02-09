@@ -11,50 +11,10 @@ import monad.container._
 import monad.syntax.Implicits._
 import MonadContainerErrorS.ContainerError
 
-trait WithSrvBook {
-     def withSrvBook ( newsrvBook : ServiceBookF[Error,ContainerError] ) : WithSrvSales
-}
-
-trait WithSrvSales {
-     def withSrvSales ( newsrvSales : ServiceSalesF[Error,ContainerError] ) : WithSrvChapter
-}
-
-trait WithSrvChapter {
-     def withSrvChapter ( newsrvChapter : ServiceChapterF[Error,ContainerError] )  : WithSrvAuthor
-}
-
-trait WithSrvAuthor {
-     def build ( newSrvAuthor : ServiceAuthorF[Error,ContainerError] ) : SrvSummarySContError
-}
-
-class SrvSumContainerErrorDSL(
-    private val srvBook    : Option[ServiceBookF[Error,ContainerError]],
-    private val srvSales   : Option[ServiceSalesF[Error,ContainerError]],
-    private val srvChapter : Option[ServiceChapterF[Error,ContainerError]],
-    private val srvAuthor  : Option[ServiceAuthorF[Error,ContainerError]] ) 
-    extends WithSrvBook with WithSrvSales with WithSrvChapter with WithSrvAuthor {
-  
-    def withSrvBook ( newsrvBook : ServiceBookF[Error,ContainerError] ) : WithSrvSales = {
-       new SrvSumContainerErrorDSL( Some(newsrvBook),srvSales, srvChapter, srvAuthor )
-    }
-    
-    def withSrvSales ( newsrvSales : ServiceSalesF[Error,ContainerError] ) : WithSrvChapter= {
-        new SrvSumContainerErrorDSL( srvBook, Some(newsrvSales), srvChapter, srvAuthor )
-    }
-    
-    def withSrvChapter ( newsrvChapter : ServiceChapterF[Error,ContainerError] ) : WithSrvAuthor= {
-        new SrvSumContainerErrorDSL( srvBook, srvSales, Some(newsrvChapter), srvAuthor )
-    }
-    
-    def build ( newSrvAuthor : ServiceAuthorF[Error,ContainerError]  ) : SrvSummarySContError = {
-        SrvSummarySContError( srvBook.get, srvSales.get, srvChapter.get, newSrvAuthor )
-    }
-        
-}
 
 object SrvSummarySContError {
     
- def dsl : WithSrvBook = new SrvSumContainerErrorDSL(None,None,None,None)
+ def dsl : WithSrvBook[Error, ContainerError] = SrvSumContainerErrorDSL(None,None,None,None)
   
  def apply( 
     implicit srvBook : ServiceBookF[Error,ContainerError],
@@ -73,3 +33,37 @@ class SrvSummarySContError(
   implicit val E  = MonadContainerErrorS()   
   
 }
+
+
+object SrvSumContainerErrorDSL{
+    
+    def apply( srvBook    : Option[ServiceBookF[Error,ContainerError]]   ,
+                srvSales   : Option[ServiceSalesF[Error,ContainerError]]  ,
+                srvChapter : Option[ServiceChapterF[Error,ContainerError]],
+                srvAuthor  : Option[ServiceAuthorF[Error,ContainerError]]   
+            ) = new SrvSumContainerErrorDSL( srvBook, srvSales, srvChapter, srvAuthor )
+    
+}
+
+class SrvSumContainerErrorDSL(
+    val srvBook    : Option[ServiceBookF[Error,ContainerError]],
+    val srvSales   : Option[ServiceSalesF[Error,ContainerError]],
+    val srvChapter : Option[ServiceChapterF[Error,ContainerError]],
+    val srvAuthor  : Option[ServiceAuthorF[Error,ContainerError]] ) 
+    extends SrvSummaryFDSL[Error,ContainerError] {
+  
+    def build ( newSrvAuthor : ServiceAuthorF[Error,ContainerError]  ) : SrvSummarySContError = {
+        SrvSummarySContError( srvBook.get, srvSales.get, srvChapter.get, newSrvAuthor )
+    }
+    
+    protected def copy( srvBook    : Option[ServiceBookF[Error,ContainerError]]   ,
+                        srvSales   : Option[ServiceSalesF[Error,ContainerError]]  ,
+                        srvChapter : Option[ServiceChapterF[Error,ContainerError]],
+                        srvAuthor  : Option[ServiceAuthorF[Error,ContainerError]]   
+                    ) : SrvSummaryFDSL[Error,ContainerError] = {
+        
+        SrvSumContainerErrorDSL( srvBook, srvSales, srvChapter, srvAuthor )
+    }
+        
+}
+

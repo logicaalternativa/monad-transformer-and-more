@@ -51,7 +51,7 @@ public class SrvSummarySContainerTest {
 		
 		srvSummary = SrvSummarySContError.dsl()
 						.withSrvBook( idBook -> srvBook.getBook( idBook ) )
-						.withSrvSales(s -> srvSales.getSales( s ) )
+						.withSrvSales(sales -> srvSales.getSales( sales ) )
 						.withSrvChapter( chapter -> srvChapter.getChapter( chapter ) )
 						.build( idAuthor ->  srvAuthor.getAuthor( idAuthor  ) ) 
 						;
