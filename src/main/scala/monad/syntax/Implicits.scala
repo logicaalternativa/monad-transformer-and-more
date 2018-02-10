@@ -59,4 +59,8 @@ object Implicits {
   
   implicit def unWrapMonad[E,T,P[_]]( s : WrapperMonad[E,P,T]  ) : P[T] = s.value
   
+  implicit def asScalaList[T]( l : JList[T] ) : List[T] = l.asScala.toList
+  
+  implicit def asJavaList[T]( l : List[T] ) : JList[T] = l.asJava
+  
 }
