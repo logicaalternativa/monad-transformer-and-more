@@ -28,13 +28,13 @@ trait Monad[E, P[_]] {
 
   def flatten[T]( from : P[P[T]] ) : P[T] = ???
 
-  def flatMap2[A,B,T]( fromA : A, fromB :B, f : JFunction2[A,B,P[T]] ) : P[T] = ???
+  def flatMap2[A,B,T]( fromA : P[A], fromB :P[B], f : JFunction2[A,B,P[T]] ) : P[T] = ???
   
-  def map2[A,B,T]( fromA : A, fromB :B, f : JFunction2[A,B,T] ) : P[T] = ???
+  def map2[A,B,T]( fromA : P[A], fromB : P[B], f : JFunction2[A,B,T] ) : P[T] = ???
   
-  def flatMap3[A,B,C,T]( fromA : A, fromB :B, fromC :C, f : JFunction3[A,B,C,P[T]] ) : P[T] = ???
+  def flatMap3[A,B,C,T]( fromA : P[A], fromB : P[B], fromC :P[C], f : JFunction3[A,B,C,P[T]] ) : P[T] = ???
   
-  def map3[A,B,C,T]( fromA : A, fromB :B, fromC :C, f : JFunction3[A,B,C,T] ) : P[T] = ???
+  def map3[A,B,C,T]( fromA : P[A], fromB :P[B], fromC :P[C], f : JFunction3[A,B,C,T] ) : P[T] = ???
   
   def sequence[T]( l : JList[P[T]]  ) : P[JList[T]] =  ???
   
