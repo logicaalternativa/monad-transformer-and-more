@@ -20,6 +20,8 @@
     <encoding>UTF-8</encoding>
     <scala.version>2.12.3</scala.version>
     <scala.compat.version>2.12</scala.compat.version>
+    <!-- mvn scala:cc Compilation without FSC (with regular scalac like non-continuous compilation)   -->
+    <fsc>false</fsc>
   </properties>
 
   <dependencies>

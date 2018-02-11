@@ -26,4 +26,6 @@ trait SrvSummaryF[E,P[_]] {
     
   } 
   
+  protected[SrvSummaryF] def getGenericError( s : String ) : E
+  
 }

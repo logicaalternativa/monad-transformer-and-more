@@ -5,6 +5,7 @@ package impl
 import monad._
 import bean._
 import errors._
+import errors.impl._
 import service._
 import monad.futeither._
 
@@ -34,7 +35,8 @@ class SrvSummarySFutError(
     val srvAuthor : ServiceAuthorF[Error,FutEitherError],
     val ec: ExecutionContext ) extends SrvSummaryF[Error,FutEitherError] {
  
-  implicit val E  = MonadFutEitherS( ec )   
+  implicit val E  = MonadFutEitherS( ec )  
+  override def getGenericError( s : String ) = new MyError( s ) 
   
 }
 

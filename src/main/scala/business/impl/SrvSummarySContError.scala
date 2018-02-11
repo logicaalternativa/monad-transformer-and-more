@@ -5,6 +5,7 @@ package impl
 import monad._
 import bean._
 import errors._
+import errors.impl._
 import service._
 import monad.container._
 
@@ -31,6 +32,8 @@ class SrvSummarySContError(
     val srvAuthor : ServiceAuthorF[Error,ContainerError]) extends SrvSummaryF[Error,ContainerError] {
  
   implicit val E  = MonadContainerErrorS()   
+  
+  override def getGenericError( s : String ) = new MyError( s ) 
   
 }
 

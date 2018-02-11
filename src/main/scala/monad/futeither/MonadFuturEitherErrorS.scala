@@ -2,12 +2,8 @@ package com.logicaalternativa.monadtransformerandmore
 package monad
 package futeither
 
-import function.{Function3 => JFunction3}
-import com.logicaalternativa.monadtransformerandmore.container._
 import errors._
 import errors.impl._
-import java.util.function.{Function => JFunction}
-import syntax.Implicits._
 import scala.concurrent._
 import scala.util._
 
@@ -29,11 +25,11 @@ class MonadFutEitherS(implicit ec : ExecutionContext ) extends Monad[Error, FutE
   
   def pure[T]( value : T ) : FutEitherError[T] = ???
   
-  def flatMap[A,T]( from : FutEitherError[A], f : JFunction[A, FutEitherError[T]] ) : FutEitherError[T] = ???
+  def flatMap[A,T]( from : FutEitherError[A], f : (A) => FutEitherError[T] ) : FutEitherError[T] = ???
   
   def raiseError[T] ( error: Error ) : FutEitherError[T] = ???
 
-  def recoverWith[T]( from : FutEitherError[T], f : JFunction[Error, FutEitherError[T]] ) : FutEitherError[T] = ???
+  def recoverWith[T]( from : FutEitherError[T], f : (Error) => FutEitherError[T] ) : FutEitherError[T] = ???
  
   
 }
