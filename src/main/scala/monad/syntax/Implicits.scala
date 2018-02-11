@@ -12,15 +12,15 @@ object Implicits {
   
   class WrapperMonad[E,P[_],A]( val value : P[A], private val E : Monad[E,P] ) {
 
-    def flatMap[T]( from : A => P[T] ) : P[T] = {
+    def flatMap[T]( f : A => P[T] ) : P[T] = {
       
-      E.flatMap( value, from )
+      E.flatMap( value, f )
         
     } 
     
-    def map[T]( from : A => T ) : P[T] = {
+    def map[T]( f : A => T ) : P[T] = {
       
-      E.map( value, from )
+      E.map( value, f )
         
     } 
     

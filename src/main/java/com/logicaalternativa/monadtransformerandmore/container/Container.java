@@ -37,6 +37,12 @@ public final class Container<E,T> {
 		
 		return new Container<E, T>(value, null, true );		
 		
+	}
+
+	@Override
+	public String toString() {
+		return "Container [value=" + value + ", ok=" + ok + ", error=" + error
+				+ "]";
 	}	  
 	
 }

@@ -15,4 +15,9 @@ public class MyError implements Error{
 		return description;
 	}
 
+	@Override
+	public String toString() {
+		return "MyError [description=" + description + "]";
+	}
+
 }
