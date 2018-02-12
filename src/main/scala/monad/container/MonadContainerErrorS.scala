@@ -10,7 +10,7 @@ import MonadContainerErrorS.ContainerError
 
 object MonadContainerErrorS {
   
-    type ContainerError[_] =  Container[Error,_]
+    type ContainerError[T] =  Container[Error,T]
     
     def apply() = new MonadContainerErrorS
   

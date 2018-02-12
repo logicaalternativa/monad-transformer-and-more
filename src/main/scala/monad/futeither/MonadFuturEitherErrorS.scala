@@ -15,7 +15,7 @@ object MonadFutEitherS {
   
     // import scala.concurrent.ExecutionContext.Implicits.global
   
-    type FutEitherError[_] =  Future[Either[Error,_]]    
+    type FutEitherError[T] =  Future[Either[Error,T]]    
     
     def apply( implicit ec: ExecutionContext ) = new MonadFutEitherS
   
