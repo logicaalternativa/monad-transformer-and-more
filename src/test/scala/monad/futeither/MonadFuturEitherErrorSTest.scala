@@ -84,6 +84,21 @@ class MonadFutEitherSTest {
     } 
     
     @Test
+    def flatMapFailed : Unit = {
+      
+        val expectedError = "expected error"
+        
+        val cont : FutEitherError[String] = Future.failed( new Exception( expectedError ) )      
+        
+        val fut =  flatMap[String, Int]( cont, v => pure( v.length ) )  
+               
+        val res = Await.result( fut, 500 millis )
+        
+        assertEquals( expectedError, res.left.get.getDescription )        
+      
+    }
+    
+    @Test
     def raiseErrorOk : Unit = {
       
         val expected = "one"
@@ -149,6 +164,24 @@ class MonadFutEitherSTest {
         val res = Await.result( fut, 500 millis )
         
         assertEquals( expectedError, res.left.get.getDescription)
+      
+    }
+    
+    @Test
+    def recoverWithFailed : Unit = {
+      
+        val expectedError = "expected error"
+        
+        val cont : FutEitherError[String] = Future.failed( new Exception( expectedError ) )        
+        
+        val fut =  recoverWith( 
+                      cont, 
+                      e => pure( s"${e.getDescription} !!!" )
+                    )
+                    
+        val res = Await.result( fut, 500 millis )
+        
+        assertEquals( expectedError, res.left.get.getDescription )
       
     }
   
