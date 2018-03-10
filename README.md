@@ -58,5 +58,42 @@ Intenta que pasen todos los test, ejecutando.
 ```
 mvn clean test
 ```
+
 Recuerda que deberás tener en cuenta el control de errores.
+
+# Apendice: fork en git
+
+ ## Fork githug
+ - Registrate con tu usuario en **github** 
+ - Ve a [https://github.com/logicaalternativa/monad-transformer-and-more](https://github.com/logicaalternativa/monad-transformer-and-more)
+ - Haz un Fork del repositorio
+ 
+ ## Siguiente: clonar el repo en tu máquina
+ - Comprueba que el fork ha salido bien
+ - Copia la URL de tu repositorio  
+ - Clona tu repositorio ejecutando en tu máquina
+      
+      git clone <la-url-que-acabas-de-copiar>
+      cd monad-transformer-and-more
+  
+  - Añade el repositorio del workshop como remoto
+  
+      git remote add upstream https://github.com/logicaalternativa/monad-transformer-and-more.git
+  
+## Mantener tu rama y repo actualizadas
+  
+      git checkout <rama_curso>
+      git pull upstream <rama_curso>
+      git push origin <rama_curso>
+  
+## Recomendaciones
+  
+  - Para evitar merges y conflictos crea una rama de trabajo a partir de
+    la rama del curso.
+    
+    git checkout <rama_curso>
+    git checkout -b <mi_rama_trabajo>
+    
+  
+    
 
