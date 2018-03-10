@@ -1,4 +1,4 @@
-﻿# Workshop sobre ¿_Monad transformer_ o es otra cosa mejor? #
+﻿# Taller sobre ¿_Monad transformer_ o es otra cosa mejor? #
 
 Este es un _**taller**_ donde vamos a empezar con un acercamiento a las 
 monadas desde **Java** intentando solucionar un hipotético problema que 
@@ -82,17 +82,17 @@ Recuerda que deberás tener en cuenta el control de errores.
   
 ## Mantener tu rama y repo actualizadas
   
-      git checkout <rama_curso>
-      git pull upstream <rama_curso>
-      git push origin <rama_curso>
+      git checkout <rama_taller>
+      git pull upstream <rama_taller>
+      git push origin <rama_taller>
   
 ## Recomendaciones
   
   - Para evitar merges y conflictos crea una rama de trabajo a partir de
     la rama del curso.
     
-    git checkout <rama_curso>
-    git checkout -b <mi_rama_trabajo>
+            git checkout <rama_taller>
+            git checkout -b <mi_rama_trabajo>
     
   
     
