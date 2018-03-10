@@ -68,8 +68,7 @@ Recuerda que deberás tener en cuenta el control de errores.
  - Ve a [https://github.com/logicaalternativa/monad-transformer-and-more](https://github.com/logicaalternativa/monad-transformer-and-more)
  - Haz un Fork del repositorio
  
- ## Siguiente: clonar el repo en tu máquina
- - Comprueba que el fork ha salido bien
+ ## Clonar el repo en tu máquina
  - Copia la URL de tu repositorio  
  - Clona tu repositorio ejecutando en tu máquina
     
