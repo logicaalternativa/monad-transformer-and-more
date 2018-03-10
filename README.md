@@ -33,7 +33,7 @@ más clara y declarativa
 ## La solución ##
 
 Llega **Scala** al rescate con la '_magia_' de sus '_constructores de 
-tipos_' y sus '_implícitos_' y su poder de genera DSLs de manera 
+tipos_' y sus '_implícitos_' y su poder de generar DSLs de manera 
 elegante. Veremos que se puede tener la lógica definida de manera 
 declarativa de una manera elegante independiente de si se trabaja de 
 manera síncrona o asíncrona, y con perfecta integración con código 
@@ -72,7 +72,7 @@ Recuerda que deberás tener en cuenta el control de errores.
  - Copia la URL de tu repositorio  
  - Clona tu repositorio ejecutando en tu máquina
     
-            git clone <la-url-que-acabas-de-copiar>
+            git clone <la-url-de-tu-repo>
             cd monad-transformer-and-more
   
   - Añade el repositorio del workshop como remoto
