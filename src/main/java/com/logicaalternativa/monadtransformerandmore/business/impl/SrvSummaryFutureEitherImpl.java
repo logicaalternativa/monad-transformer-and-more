@@ -2,6 +2,7 @@ package com.logicaalternativa.monadtransformerandmore.business.impl;
 
 import com.logicaalternativa.monadtransformerandmore.bean.*;
 import scala.Tuple2;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.Promise;
 import scala.util.Either;
@@ -48,9 +49,12 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 
     @Override
     public Future<Either<Error, Summary>> getSummary(Integer idBook) {
+        final ExecutionContext ec = ExecutionContexts.global();
 
         final Future<Either<Error, Book>> book = srvBook.getBook(idBook);
         final Future<Either<Error, Sales>> sales = srvSales.getSales(idBook);
+        final Future<Either<Error, Author>> author = book.flatMap(b -> srvAuthor.getAuthor(b.right().get().getIdAuthor()), ec);
+
 
         Future<Tuple2<Either<Error, Book>, Either<Error, Sales>>> zipBook = book.zip(sales);
 
