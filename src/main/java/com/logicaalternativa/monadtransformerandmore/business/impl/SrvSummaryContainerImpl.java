@@ -5,6 +5,7 @@ import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImp
 import com.logicaalternativa.monadtransformerandmore.bean.*;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryContainer;
 import com.logicaalternativa.monadtransformerandmore.container.Container;
+import com.logicaalternativa.monadtransformerandmore.errors.impl.MyError;
 import com.logicaalternativa.monadtransformerandmore.monad.MonadContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceAuthorContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBookContainer;
@@ -44,14 +45,29 @@ public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 
         Container<Error, Book> book = srvBook.getBook(idBook);
         Container<Error, Sales> sales = srvSales.getSales(idBook);
-        Container<Error, Author> author = srvAuthor.getAuthor(book.getValue().getIdAuthor());
 
-        List<Chapter> chapters =
-                book.getValue().getChapters().stream().map(c -> srvChapter.getChapter(c).getValue()).collect(Collectors.toList());
 
-        Summary summary = new Summary(book.getValue(), chapters, Optional.of(sales.getValue()), author.getValue());
+        if (book.isOk()) {
 
-        return Container.value(summary);
+            Container<Error, Author> author = srvAuthor.getAuthor(book.getValue().getIdAuthor());
+
+            if (author.isOk()) {
+
+                if (book.getValue().getChapters().stream().allMatch(c -> srvChapter.getChapter(c).isOk())) {
+                    List<Chapter> chapters =
+                            book.getValue().getChapters().stream().map(c -> srvChapter.getChapter(c).getValue()).collect(Collectors.toList());
+
+                    Summary summary = new Summary(book.getValue(),
+                            chapters, sales.isOk() ? Optional.of(sales.getValue()) : Optional.empty(),
+                            author.isOk() ? author.getValue() : null);
+
+                    return Container.value(summary);
+                }
+            }
+        }
+
+        return Container.error(new MyError("It is impossible to get book summary"));
+
 
     }
 
