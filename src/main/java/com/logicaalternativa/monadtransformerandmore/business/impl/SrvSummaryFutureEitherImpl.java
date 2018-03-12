@@ -43,7 +43,7 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 		this.srvSales = srvSales;
 		this.srvChapter = srvChapter;
 		this.srvAuthor = srvAuthor;
-		this.m= m;
+		this.m = m;
 	}
 
 	@Override
