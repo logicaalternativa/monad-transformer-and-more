@@ -1,11 +1,15 @@
 package com.logicaalternativa.monadtransformerandmore.business.impl;
 
+import scala.Tuple2;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.Promise;
 import scala.util.Either;
 import akka.dispatch.ExecutionContexts;
 import akka.dispatch.Futures;
 
+import com.logicaalternativa.monadtransformerandmore.bean.Book;
+import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEither;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
@@ -44,6 +48,14 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 
 	@Override
 	public Future<Either<Error, Summary>> getSummary(Integer idBook) {
+		
+		final ExecutionContext ec = ExecutionContexts.global();
+		
+		final Future<Either<Error, Book>> bookF = srvBook.getBook(idBook);
+		
+		final Future<Either<Error, Sales>> salesF = srvSales.getSales( idBook );		
+		
+		final Future<Tuple2<Either<Error, Book>, Either<Error, Sales>>> bookAndSalesF = bookF.zip(salesF);
 		
 		return $_notYetImpl();
 	}
