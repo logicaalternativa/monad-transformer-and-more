@@ -26,6 +26,7 @@ import scala.util.Right;
 import scala.util.Try;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +59,17 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
         this.m = m;
     }
 
+    private static Right apply(Tuple2<Tuple2<Either<Error, Book>, Either<Error, Sales>>, Tuple2<Either<Error, Author>, Iterable<Either<Error, Chapter>>>> t22) {
+        Book b = t22._1._1.right().get();
+        Sales s = t22._1._2.right().get();
+        Author a = t22._2._1.right().get();
+        Iterator<Either<Error, Chapter>> iterator = t22._2._2.iterator();
+        List<Chapter> listChaptersComp = new ArrayList<>();
+        iterator.forEachRemaining(chapEither -> listChaptersComp.add(chapEither.right().get()));
+        Summary summary = new Summary(b, listChaptersComp, Optional.of(s), a);
+        return new Right(summary);
+    }
+
     @Override
     public Future<Either<Error, Summary>> getSummary(Integer idBook) {
         final ExecutionContext ec = ExecutionContexts.global();
@@ -74,49 +86,15 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
                         .map(l -> srvChapter.getChapter(l))
                         .collect(Collectors.toList()), ec), ec);
 
+        Future<Tuple2<Either<Error, Book>, Either<Error, Sales>>> zipBookAndSales = book.zip(sales);
+        Future<Tuple2<Either<Error, Author>, Iterable<Either<Error, Chapter>>>> zipAuthorAndChapters = author.zip(listChapters);
 
-        Timeout timeout = new Timeout(Duration.create(200, "milliseconds"));
-        Book bookComp = null;
-        try {
-            bookComp = Await.result(book, timeout.duration()).right().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Future<Tuple2<Tuple2<Either<Error, Book>, Either<Error, Sales>>, Tuple2<Either<Error, Author>, Iterable<Either<Error, Chapter>>>>> zipTotal = 
+                zipBookAndSales.zip(zipAuthorAndChapters);
 
-        Sales salesComp = null;
+        Future eitherSummary = zipTotal.map(SrvSummaryFutureEitherImpl::apply, ec);
 
-        try {
-            salesComp = Await.result(sales, timeout.duration()).right().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Author authorComp = null;
-
-        try {
-            authorComp = Await.result(author, timeout.duration()).right().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<Chapter> listChaptersComp = new ArrayList<>();
-
-        Iterable<Either<Error, Chapter>> eitherIterable = null;
-
-        try {
-            eitherIterable = Await.result(listChapters, timeout.duration());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        eitherIterable.iterator().forEachRemaining(chapEither -> listChaptersComp.add(chapEither.right().get()));
-
-        Summary summary = new Summary(bookComp, listChaptersComp, Optional.of(salesComp) ,authorComp);
-        Either<Error, Summary> either = new Right(summary);
-
-        Promise<Either<Error, Summary>> promise = Futures.promise();
-
-        return promise.success(either).future();
+        return eitherSummary;
     }
 
 }
