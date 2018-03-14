@@ -104,7 +104,7 @@ public class SrvSummaryFutEitherImpTest {
 		final Future<Either<Error, Summary>> summaryFu = srvSummary
 				.getSummary(bookId);
 		
-		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.SECONDS));
 
 		// Then
 		final Summary summary = res.right().get();
