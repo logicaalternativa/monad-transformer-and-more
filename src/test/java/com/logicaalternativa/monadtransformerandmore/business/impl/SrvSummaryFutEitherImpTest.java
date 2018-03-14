@@ -171,15 +171,23 @@ public class SrvSummaryFutEitherImpTest {
 		
 	}
 	
+	@Test
+	public void exceptionBook() throws Exception {
+		
+		testErrorGeneric( 4 );
+				
+		
+	}
+	
 	private void testErrorGeneric( final Integer bookId ) throws Exception {
 		
 		// When
 		final Future<Either<Error, Summary>> summaryFu = srvSummary
 				.getSummary(bookId);
 		
+		
 		final Either<Error, Summary> res = Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
-
-
+		
 		// Then
 		assertEquals( "It is impossible to get book summary", res.left().get().getDescription() );
 		
