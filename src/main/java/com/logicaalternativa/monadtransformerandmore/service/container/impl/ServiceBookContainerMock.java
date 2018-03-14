@@ -15,9 +15,15 @@ public class ServiceBookContainerMock implements ServiceBookContainer<Error>{
   
     @Override
     public Container<Error, Book> getBook( int bookId ) {
-    	
-      if ( bookId < 0 ) {    	  
-    	  return Container.error( new MyError("Book not found " + bookId) );
+      
+       if ( bookId < 0 ) { 
+        return Container.error( new MyError("Book not found " + bookId) );
+      }
+       
+      if ( bookId == 4 ) { 
+    	  
+        throw new RuntimeException( "Exception to get Book" );
+        
       }
       
       final String nameBook = "Book " + bookId;

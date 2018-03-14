@@ -18,6 +18,12 @@ public class ServiceAuthorContainerMock implements ServiceAuthorContainer<Error>
 			
 		}
 		
+		if ( "author-book-5".equals( id )  ){
+			
+			throw new RuntimeException( "Exception to get Author" );
+			
+		}
+		
 		final Author author = new Author( "Name of " + id ) ;
 		
 		return Container.value( author );
