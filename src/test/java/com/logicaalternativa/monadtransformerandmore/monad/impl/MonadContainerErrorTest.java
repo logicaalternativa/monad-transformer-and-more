@@ -62,7 +62,6 @@ public class MonadContainerErrorTest {
         assertEquals( expectedError, res.getError().getDescription() );        
       
     }   
-    
   
     @Test
     public void flatMapException() {
@@ -153,9 +152,7 @@ public class MonadContainerErrorTest {
         assertEquals( new Integer( expected.length() ) , res.getValue() ) ; 
       
     }
-    
-    
-  
+      
     @Test
     public void mapKo() {
       
@@ -169,7 +166,6 @@ public class MonadContainerErrorTest {
       
     }   
     
-  
     @Test
     public void mapException() {
       
@@ -184,8 +180,6 @@ public class MonadContainerErrorTest {
         assertEquals( expectedError, res.getError().getDescription() );        
       
     }
-    
-    
     
     @Test
     public void recoverOk() {
