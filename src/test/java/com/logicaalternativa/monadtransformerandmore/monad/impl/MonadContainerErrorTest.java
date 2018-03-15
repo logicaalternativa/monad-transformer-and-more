@@ -14,19 +14,19 @@ import com.logicaalternativa.monadtransformerandmore.errors.impl.MyError;
 import com.logicaalternativa.monadtransformerandmore.container.Container;
 
 public class MonadContainerErrorTest {
-	
-	MonadContainerError m ;
+    
+    MonadContainerError m ;
 
-	@Before
-	public void setUp() throws Exception {
-		m = new MonadContainerError();
-	}
+    @Before
+    public void setUp() throws Exception {
+        m = new MonadContainerError();
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
+    @Test
     public void pureOk() {
       
         final String expected = "one";
@@ -62,7 +62,6 @@ public class MonadContainerErrorTest {
         assertEquals( expectedError, res.getError().getDescription() );        
       
     }   
-    
   
     @Test
     public void flatMapException() {
@@ -72,8 +71,8 @@ public class MonadContainerErrorTest {
         final Container<Error,String> cont = Container.value( "one" );      
         
         final Container<Error,String> res =  m.flatMap( cont, v -> {
-        	
-        	throw new RuntimeException( expectedError );
+            
+            throw new RuntimeException( expectedError );
         });
         
         assertEquals( expectedError, res.getError().getDescription() );        
@@ -133,7 +132,7 @@ public class MonadContainerErrorTest {
         final Container<Error,String> res =  m.recoverWith( 
                       cont, 
                       e -> { 
-                    	  throw new RuntimeException( expectedError ); 
+                          throw new RuntimeException( expectedError ); 
                       }
                     );
         
@@ -153,9 +152,7 @@ public class MonadContainerErrorTest {
         assertEquals( new Integer( expected.length() ) , res.getValue() ) ; 
       
     }
-    
-    
-  
+      
     @Test
     public void mapKo() {
       
@@ -169,7 +166,6 @@ public class MonadContainerErrorTest {
       
     }   
     
-  
     @Test
     public void mapException() {
       
@@ -178,14 +174,12 @@ public class MonadContainerErrorTest {
         final Container<Error,String> cont = Container.value( "one" );       
         
         final Container<Error,Integer> res =  m.map( cont, v -> { 
-        	throw new RuntimeException( expectedError );
+            throw new RuntimeException( expectedError );
         } );
         
         assertEquals( expectedError, res.getError().getDescription() );        
       
     }
-    
-    
     
     @Test
     public void recoverOk() {
@@ -229,7 +223,7 @@ public class MonadContainerErrorTest {
         final Container<Error,String> res = m.recover( 
                       cont, 
                       e -> { 
-                    	  throw new RuntimeException( expectedError ); 
+                          throw new RuntimeException( expectedError ); 
                       }
                     );
         

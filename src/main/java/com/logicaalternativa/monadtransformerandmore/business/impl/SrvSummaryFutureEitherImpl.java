@@ -78,7 +78,10 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 		
 		final Future<Either<Error, Author>> authorF = bookF.flatMap(
 				eitherBook -> getAuthor(eitherBook)
-				, ec);
+				, ec)
+				.recover(
+					recoverF( e -> new Left<>( new MyError( e.getMessage() ) ) )
+					,ec);
 		
 		
 		final Future<Either<Error, List<Chapter>>> iterableFutureChapter = bookF.flatMap(

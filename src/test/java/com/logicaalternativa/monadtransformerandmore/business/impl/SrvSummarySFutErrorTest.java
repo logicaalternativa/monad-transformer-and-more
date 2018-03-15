@@ -48,147 +48,162 @@ import com.logicaalternativa.monadtransformerandmore.service.future.impl.Service
 
 public class SrvSummarySFutErrorTest {
 
-	@SuppressWarnings("rawtypes")
-	private SrvSummaryF<Error,Future> srvSummary;
+  @SuppressWarnings("rawtypes")
+  private SrvSummaryF<Error,Future> srvSummary;
 
-	private final ServiceBookFutEither<Error> srvBook = new ServiceBookFutEitherMock();
-	private final ServiceSalesFutEither<Error> srvSales = new ServiceSalesFutEitherMock();
-	private final ServiceChapterFutEither<Error> srvChapter = new ServiceChapterFutEitherMock();
-	private final ServiceAuthorFutEither<Error> srvAuthor = new ServiceAuthorFutEitherMock();
-	
-	private final ServiceChapterContainer<Error> srvChapterCheck = new ServiceChapterContainerMock();
-	private final ServiceBookContainer<Error> srvBookCheck = new ServiceBookContainerMock();
-	private final ServiceSalesContainer<Error> srvSalesCheck = new ServiceSalesContainerMock();
-	private final ServiceAuthorContainer<Error> srvAuthorCheck = new ServiceAuthorContainerMock();
+  private final ServiceBookFutEither<Error> srvBook = new ServiceBookFutEitherMock();
+  private final ServiceSalesFutEither<Error> srvSales = new ServiceSalesFutEitherMock();
+  private final ServiceChapterFutEither<Error> srvChapter = new ServiceChapterFutEitherMock();
+  private final ServiceAuthorFutEither<Error> srvAuthor = new ServiceAuthorFutEitherMock();
+  
+  private final ServiceChapterContainer<Error> srvChapterCheck = new ServiceChapterContainerMock();
+  private final ServiceBookContainer<Error> srvBookCheck = new ServiceBookContainerMock();
+  private final ServiceSalesContainer<Error> srvSalesCheck = new ServiceSalesContainerMock();
+  private final ServiceAuthorContainer<Error> srvAuthorCheck = new ServiceAuthorContainerMock();
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		
-		final ExecutionContextExecutor ec = ExecutionContexts.global();		
-		
-		// srvSummary = SrvSummarySFutError.apply(srvBook, srvSales, srvChapter, srvAuthor, ec);
-		
-		srvSummary = dsl(ec)
-				.withSrvBook( idBook -> srvBook.getBook( idBook ) )
-				.withSrvSales(sales -> srvSales.getSales( sales ) )
-				.withSrvChapter( chapter -> srvChapter.getChapter( chapter ) )
-				.build( idAuthor ->  srvAuthor.getAuthor( idAuthor )) 
-				;
-		
-		
-	}
+  /**
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    
+    final ExecutionContextExecutor ec = ExecutionContexts.global();   
+    
+    // srvSummary = SrvSummarySFutError.apply(srvBook, srvSales, srvChapter, srvAuthor, ec);
+    
+    srvSummary = dsl(ec)
+        .withSrvBook( idBook -> srvBook.getBook( idBook ) )
+        .withSrvSales(sales -> srvSales.getSales( sales ) )
+        .withSrvChapter( chapter -> srvChapter.getChapter( chapter ) )
+        .build( idAuthor ->  srvAuthor.getAuthor( idAuthor )) 
+        ;
+    
+    
+  }
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
+  /**
+   * @throws java.lang.Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+  }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void happyPath() throws Exception {
-		
-		// Given
-		final Integer bookId = 1;
-		
-		final Book expectedBook = srvBookCheck.getBook(bookId).getValue();
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Test
+  public void happyPath() throws Exception {
+    
+    // Given
+    final Integer bookId = 1;
+    
+    final Book expectedBook = srvBookCheck.getBook(bookId).getValue();
 
-		final List<Chapter> expectedChapters = expectedBook.getChapters().stream()
-				.map(s -> srvChapterCheck.getChapter(s).getValue())
-				.collect(Collectors.toList());
-		
-		final Sales expectedSales = srvSalesCheck.getSales(bookId).getValue() ;
-		
-		final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
+    final List<Chapter> expectedChapters = expectedBook.getChapters().stream()
+        .map(s -> srvChapterCheck.getChapter(s).getValue())
+        .collect(Collectors.toList());
+    
+    final Sales expectedSales = srvSalesCheck.getSales(bookId).getValue() ;
+    
+    final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
 
-		// When
-		final Future summaryFu = srvSummary.getSummary(bookId);
-		
-		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+    // When
+    final Future summaryFu = srvSummary.getSummary(bookId);
+    
+    final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
 
-		// Then
-		final Summary summary = res.right().get();
+    // Then
+    final Summary summary = res.right().get();
 
-		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( Optional.of(expectedSales), summary.getSales() );
-		assertEquals( expectedAuthor, summary.getAuthor() );
-		assertEquals( expectedChapters, summary.getChapter());
+    assertEquals( expectedBook, summary.getBook() );
+    assertEquals( Optional.of(expectedSales), summary.getSales() );
+    assertEquals( expectedAuthor, summary.getAuthor() );
+    assertEquals( expectedChapters, summary.getChapter());
 
-	}
-	
-
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void happyPathWOSales() throws Exception {
-		
-		// Given
-		final Integer bookId = 1000;
-		
-		final Book expectedBook = srvBookCheck.getBook(bookId).getValue();
-
-		final List<Chapter> expectedChapters = expectedBook.getChapters().stream()
-				.map(s -> srvChapterCheck.getChapter(s).getValue())
-				.collect(Collectors.toList());
-		
-		final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
-
-		// When
-		final Future summaryFu = srvSummary.getSummary(bookId);
-		
-		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
-
-		// Then
-		final Summary summary = res.right().get();
-
-		assertEquals( expectedBook, summary.getBook() );
-		assertEquals( false, summary.getSales().isPresent() );
-		assertEquals( expectedAuthor, summary.getAuthor() );
-		assertEquals( expectedChapters, summary.getChapter());
-
-	}
-	
-	@Test
-	public void errorBook() throws Exception {
-		
-		testErrorGeneric( -1 );
-		
-	}
-	
-	@Test
-	public void errorAuthor() throws Exception {
-		
-		testErrorGeneric( 2 );
-				
-		
-	}
-	
-	@Test
-	public void errorChapter() throws Exception {
-		
-		testErrorGeneric( 3 );
-				
-		
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void testErrorGeneric( final Integer bookId ) throws Exception {
-		
-		// When
-		final Future summaryFu = srvSummary
-				.getSummary(bookId);
-		
-		final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+  }
+  
 
 
-		// Then
-		assertEquals( "It is impossible to get book summary", res.left().get().getDescription() );
-		
-		
-	}
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Test
+  public void happyPathWOSales() throws Exception {
+    
+    // Given
+    final Integer bookId = 1000;
+    
+    final Book expectedBook = srvBookCheck.getBook(bookId).getValue();
+
+    final List<Chapter> expectedChapters = expectedBook.getChapters().stream()
+        .map(s -> srvChapterCheck.getChapter(s).getValue())
+        .collect(Collectors.toList());
+    
+    final Author expectedAuthor = srvAuthorCheck.getAuthor( expectedBook.getIdAuthor() ).getValue();
+
+    // When
+    final Future summaryFu = srvSummary.getSummary(bookId);
+    
+    final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+
+    // Then
+    final Summary summary = res.right().get();
+
+    assertEquals( expectedBook, summary.getBook() );
+    assertEquals( false, summary.getSales().isPresent() );
+    assertEquals( expectedAuthor, summary.getAuthor() );
+    assertEquals( expectedChapters, summary.getChapter());
+
+  }
+  
+  @Test
+  public void errorBook() throws Exception {
+    
+    testErrorGeneric( -1 );
+    
+  }
+  
+  @Test
+  public void errorAuthor() throws Exception {
+    
+    testErrorGeneric( 2 );
+        
+    
+  }
+  
+  @Test
+  public void errorChapter() throws Exception {
+    
+    testErrorGeneric( 3 );
+        
+    
+  }
+  
+  @Test
+  public void exceptionBook() throws Exception {
+    
+    testErrorGeneric( 4 ); 
+    
+  }
+  
+  @Test
+  public void exceptionAuthor() throws Exception {
+    
+    testErrorGeneric( 5 ); 
+        
+    
+  }
+  
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private void testErrorGeneric( final Integer bookId ) throws Exception {
+    
+    // When
+    final Future summaryFu = srvSummary
+        .getSummary(bookId);
+    
+    final Either<Error, Summary> res = (Either<Error, Summary>) Await.result(summaryFu, Duration.apply(100, TimeUnit.MILLISECONDS));
+
+
+    // Then
+    assertEquals( "It is impossible to get book summary", res.left().get().getDescription() );
+    
+    
+  }
 
 }
