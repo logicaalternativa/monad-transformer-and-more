@@ -138,7 +138,7 @@ public class MonadFutEitherErrorTest {
                     
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
         
-        assertEquals( String.format("%n !!!",expectedError), res.right().get() );
+        assertEquals( String.format("%s !!!",expectedError), res.right().get() );
       
     }
         
@@ -193,7 +193,7 @@ public class MonadFutEitherErrorTest {
                     
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
         
-        assertEquals( expectedError, res.left().get().getDescription() );
+        assertEquals( String.format("%s !!!", expectedError), res.right().get() );
       
     }
 
@@ -268,7 +268,7 @@ public class MonadFutEitherErrorTest {
         final Future<Either<Error,String>>  fut = m.flatMap2(
           one,
           two,
-          ( o, t ) -> m.pure( String.format( "%n, %n", o, t )  )
+          ( o, t ) -> m.pure( String.format( "%s, %s", o, t )  )
         );
         
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
@@ -286,7 +286,7 @@ public class MonadFutEitherErrorTest {
         final Future<Either<Error,String>> fut = m.map2(
           one,
           two,
-          ( o, t ) ->  String.format( "%n, %n", o, t )        
+          ( o, t ) ->  String.format( "%s, %s", o, t )        
         );
         
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
@@ -306,7 +306,7 @@ public class MonadFutEitherErrorTest {
           one,
           two,
           three,
-          ( o, t, tt ) -> m.pure( String.format( "%n, %n, %n", o, t, tt )  )
+          ( o, t, tt ) -> m.pure( String.format( "%s, %s, %s", o, t, tt )  )
         );
         
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
@@ -326,7 +326,7 @@ public class MonadFutEitherErrorTest {
           one,
           two,
           three,
-          ( o, t, tt ) ->  String.format( "%n, %n, %n", o, t, tt ) 
+          ( o, t, tt ) ->  String.format( "%s, %s, %s", o, t, tt ) 
         );
         
         final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );

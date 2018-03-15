@@ -1,7 +1,5 @@
 package com.logicaalternativa.monadtransformerandmore.monad.impl;
 
-import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
-
 import java.util.function.Function;
 
 import scala.concurrent.ExecutionContext;
@@ -57,10 +55,9 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 				}, ec)
 				.recoverWith(Java8.recoverF(  
 						e ->raiseError(new MyError(e.getMessage()) 
-					)  ), ec);
+				)  ), ec);
 	}
-		
-
+	
 	@Override
 	public <T> Future<Either<Error, T>> raiseError(Error error) {
 		
@@ -72,6 +69,30 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 			Future<Either<Error, T>> from,
 			Function<Error, Future<Either<Error, T>>> f) {
 		
-		return $_notYetImpl();
+		final Future<Either<Error, T>> recover = from.recoverWith(Java8.recoverF(  
+						e ->raiseError(new MyError(e.getMessage()) 
+				)  ), ec);
+				
+		final Future<Either<Error, T>> flatMap = recover.flatMap (
+				
+				eitherT -> {
+					
+					if ( eitherT.isLeft() ){
+						
+						return f.apply( eitherT.left().get()  );
+						
+						
+					} else {
+						
+						return pure( eitherT.right().get() );
+						
+					}
+					
+					
+				}, ec).recoverWith(Java8.recoverF(  
+						e ->raiseError(new MyError(e.getMessage()) 
+				)  ), ec);
+		
+		return flatMap;
 	}
 }
