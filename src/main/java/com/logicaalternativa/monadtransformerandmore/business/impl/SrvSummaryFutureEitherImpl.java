@@ -28,7 +28,9 @@ import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryFutureEi
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.errors.impl.MyError;
 import com.logicaalternativa.monadtransformerandmore.monad.MonadFutEither;
+
 import static com.logicaalternativa.monadtransformerandmore.monad.MonadFutEitherWrapper.*;
+
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceAuthorFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceBookFutEither;
 import com.logicaalternativa.monadtransformerandmore.service.future.ServiceChapterFutEither;
@@ -64,22 +66,33 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 	@Override
 	public Future<Either<Error, Summary>> getSummary(Integer idBook) {
 		
-		final List<Chapter> chapter = null;
-		final Optional<Sales> sales = null;
-		final Author author = null;
 		
+		final Future<Either<Error, Optional<Sales>>> salesFut = wrap( srvSales.getSales( idBook ), m )
+		 .map(  sales -> Optional.of( sales ) )
+		 .recover( e -> Optional.empty() )
+		 .value()
+		;		
 		
 		return wrap(srvBook.getBook(idBook), m)
-		.map( book -> new Summary(book, chapter, sales, author) )
+		.flatMap( book -> { 
+							final Future<Either<Error, Summary>> map3 = m.map3(
+					
+								srvAuthor.getAuthor( book.getIdAuthor() ),
+								m.sequence ( 
+										book.getChapters()
+										.stream()
+										.map( ch -> srvChapter.getChapter(ch) )
+										.collect(Collectors.toList() )
+								),
+								salesFut,
+								  (author,chapters, salesO) -> new Summary(book, chapters , salesO, author)
+								);
+							
+							return map3;
+				}
+		)
+		.recoverWith( e -> m.raiseError(  new MyError( "It is impossible to get book summary" ) ))
 		.value();
-		
-		
-//		final Book book = null;
-//		final List<Chapter> chapter = null;
-//		final Optional<Sales> sales = null;
-//		final Author author = null;
-//		
-//		return m.pure( new Summary(book, chapter, sales, author) );
 		
 	}
 }
