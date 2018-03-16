@@ -2,6 +2,7 @@ package com.logicaalternativa.monadtransformerandmore.monad;
 import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -30,20 +31,39 @@ public interface MonadContainer<E> {
 
 	default <A,T> Container<E, T> map( Container<E, A> from, Function<A, T> f ) {
 
-		return $_notYetImpl();
+		return flatMap( from, a -> { 
+			
+			T t = f.apply(a);
+			
+			return pure( t );
+			
+		} );		
 
 	}
 
 	default <T> Container<E, T> recover( Container<E, T> from, Function<E, T> f ) {
 
-		return $_notYetImpl();
+		return recoverWith(from, 
+				
+				e -> {
+					
+					T t = f.apply(e);
+					
+					return pure( t );
+				}
+		
+			) ;
 
 	}
 
 
 	default <T> Container<E, T> flatten( Container<E, Container<E, T>> from ) {
 
-		return $_notYetImpl();
+		return flatMap(from, 
+				
+				fut -> fut
+			
+			);
 
 	}
 
@@ -51,7 +71,9 @@ public interface MonadContainer<E> {
 			Container<E, B> fromB, 
 			BiFunction<A,B,Container<E, T>> f  ) {
 
-		return $_notYetImpl();
+		return flatten(
+				map2(fromA, fromB, f)
+				);
 
 	}
 
@@ -61,7 +83,18 @@ public interface MonadContainer<E> {
 			Container<E, B> fromB, 
 			BiFunction<A,B,T> f  ) {
 
-		return $_notYetImpl();
+		return flatMap(fromA, 
+				
+				a -> map( 
+							fromB,
+							b ->f.apply( a, b )
+							
+				)
+			
+			)
+			
+			;
+
 
 	}
 
@@ -71,7 +104,9 @@ public interface MonadContainer<E> {
 			Container<E, C> fromC, 
 			Function3<A,B,C,Container<E, T>> f  ) {
 
-		return $_notYetImpl();
+		return flatten( 
+				map3( fromA, fromB, fromC, f )
+			);
 
 	}
 
@@ -80,19 +115,40 @@ public interface MonadContainer<E> {
 			Container<E, C> fromC, 
 			Function3<A,B,C,T> f  ) {
 
-		return $_notYetImpl();
+		return flatMap(
+				fromA, 
+				 a -> map2(
+							fromB,
+						 	fromC,
+								( b, c ) -> f.apply(a, b, c)
+							)
+			);
 
 	}
 	
 	default <T> Container<E, List<T>> sequence( List<Container<E, T>> l ) {
 
-		return $_notYetImpl();
+		return sequence( l.iterator() );
 
 	}
 	
 	default <T> Container<E, List<T>> sequence( Iterator<Container<E, T>> i ) {
 
-		return $_notYetImpl();
+		if (! i.hasNext() ) {
+			
+			return pure( new LinkedList<>() );
+			
+		}
+		
+		return map2(	
+				i.next(), 
+				sequence( i ), 
+				(actual, list ) -> {					
+										final LinkedList<T> newList = new LinkedList<>( list );
+										newList.addFirst( actual );
+										return newList;
+									}
+				);
 
 	}
 	

@@ -311,7 +311,6 @@ public class MonadContainerErrorTest {
       
     }
     
-    
     @Test
     public void sequenceOk() {
     
