@@ -15,13 +15,159 @@ import scala.concurrent.ExecutionContext
 
 import MonadFutEitherS.FutEitherError
 
-class MonadFutEitherSTest {  
+object MonadFutEitherSTest {
+    
+    val Duration = 500 millis
+    
+}
+ 
+ /**
+ * <pre>
+ * Monad laws from 
+ * 
+ * [Monads for functional programming](http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf)
+ * 
+ * A binary operation with left and right unit that is associative is called a 
+ * monoid.
+ * 
+ * A monad differs from a monoid in that the right operand involves a binding
+ * operation.
+ * 
+ * </pre>
+ * 
+ * @author miguel.esteban@logicaalternativa.com
+ *
+ */
+ class MonadFutEitherSTest {  
+    
+    import MonadFutEitherSTest.Duration
+    
+    import Await.result
   
     import scala.concurrent.ExecutionContext.Implicits.global 
   
     val M = MonadFutEitherS.apply
     
     import M._
+    
+    /**
+     * Left unit <pre>
+     * 
+     *  1) Compute the value a
+     *  2) bind b to the result
+     *  3) compute n
+     *  
+     *  The result is the same as n with value a substituted for variable b
+     *  
+     *  unit a * λb. n = n[a/b]
+     *  
+     *  </pre>
+     * @throws Exception
+     */
+    @Test
+    def lawLeftUnit = {
+        
+        val expectedValue = "b"
+
+        val futA = pure("a")
+        val futB = pure( expectedValue )
+        
+        val futBB = flatMap[String, String](
+                futA, 
+                a => futB
+                )
+        
+        val resBB = result(futBB, Duration )
+        val resB = result(futB, Duration )
+        
+        assertEquals( resBB, resB )
+        assertEquals( expectedValue, resBB.right.get, resB.right.get )
+        
+    }
+    
+     /**
+     * Right unit.<pre>
+     * 
+     *  1) Compute m,
+     *  2) bind the result to a
+     *  3) return a.
+     *   
+     *  The result is the same as 
+     *  m * λa. unit a = 
+     *  
+     * </pre>
+     * @throws Exception
+     */
+    @Test
+    def lawRightUnit = {
+
+        val expectedValue = "a"
+        val futA = pure(expectedValue)
+
+        val futAA = flatMap[String, String](
+                        futA, 
+                        a => pure( a )
+                    )
+
+        val resAA = result(futAA, Duration )
+        val resA = result(futA, Duration )
+
+        assertEquals( resAA, resA )
+        assertEquals( expectedValue, resAA.right.get, resA.right.get )
+        
+    }
+    
+    
+    /**
+     * Associative. <pre>
+     * 
+     *  1) Compute m
+     *  2) bind the result to a
+     *  3) compute n, bind the result to b
+     *  4) compute o.
+     *  
+     *   The order of parentheses in such a computation is irrelevant.
+     *    m * (λa. n * λb. o) = (m * λa. n) * λb. o
+     *        
+     * </pre>
+     * @throws Exception
+     */    
+    @Test
+    def lawAsociative = {
+
+        val expectedValue = "c"
+
+        val futA = pure( "a" )
+        val futB = pure( "b" )
+        val futC = pure( expectedValue )
+
+        val futBC = flatMap[String, String](
+                futB,
+                b => futC
+                )
+
+        val futA_BC = flatMap[String, String](
+                futA, 
+                a => futBC 
+                )
+
+        val futAB = flatMap[String, String](
+                futA,
+                a => futB
+                )
+
+        val futAB_C = flatMap[String, String](
+                futAB, 
+                ab => futC
+                )
+
+        val resA_BC = result(futA_BC, Duration )
+        val resAB_C = result(futAB_C, Duration )
+
+        assertEquals( resA_BC, resAB_C )
+        assertEquals( expectedValue, resA_BC.right.get, resAB_C.right.get )
+        
+    }
     
     @Test
     def pureOk : Unit = {
@@ -30,7 +176,7 @@ class MonadFutEitherSTest {
         
         val fut : FutEitherError[String] = pure( expected )
         
-        val res = Await.result(fut, 500 millis )
+        val res = result(fut, Duration )
         
         assertEquals( expected, res.right.get )
       
@@ -45,7 +191,7 @@ class MonadFutEitherSTest {
         
         val fut =  flatMap[String, Int]( cont, v => pure( v.length ) )        
         
-        val res = Await.result(fut, 500 millis )
+        val res = result(fut, Duration )
         
         assertEquals( expected.length, res.right.get )        
       
@@ -62,7 +208,7 @@ class MonadFutEitherSTest {
         
         val fut =  flatMap[String, Int]( cont, v => pure( v.length ) )
         
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expectedError, res.left.get.getDescription )        
       
@@ -77,7 +223,7 @@ class MonadFutEitherSTest {
         
         val fut =  flatMap[String, Int]( cont, v => throw new RuntimeException( expectedError ) )
         
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expectedError, res.left.get.getDescription )        
       
@@ -92,7 +238,7 @@ class MonadFutEitherSTest {
         
         val fut =  flatMap[String, Int]( cont, v => pure( v.length ) )  
                
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expectedError, res.left.get.getDescription )        
       
@@ -105,7 +251,7 @@ class MonadFutEitherSTest {
         
         val fut : FutEitherError[String] = raiseError( new MyError( expected ) )
         
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expected, res.left.get.getDescription )
       
@@ -125,7 +271,7 @@ class MonadFutEitherSTest {
                       e => pure( s"${e.getDescription} !!!" )
                     )
                     
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( s"$expectedError !!!", res.right.get )
       
@@ -143,7 +289,7 @@ class MonadFutEitherSTest {
                       e => pure( s"${e.getDescription} !!!" )
                     )
                     
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expected, res.right.get )
       
@@ -161,7 +307,7 @@ class MonadFutEitherSTest {
                       e => throw new RuntimeException( expectedError ) 
                     )
                     
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expectedError, res.left.get.getDescription)
       
@@ -179,7 +325,7 @@ class MonadFutEitherSTest {
                       e => pure( s"${e.getDescription} !!!" )
                     )
                     
-        val res = Await.result( fut, 500 millis )
+        val res = result( fut, Duration )
         
         assertEquals( expectedError, res.left.get.getDescription )
       

@@ -9,9 +9,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.logicaalternativa.monadtransformerandmore.container.Container;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.errors.impl.MyError;
-import com.logicaalternativa.monadtransformerandmore.container.Container;
+
+/**
+ * <pre>
+ * Monad laws from 
+ * 
+ * [Monads for functional programming](http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf)
+ * 
+ * A binary operation with left and right unit that is associative is called a 
+ * monoid.
+ * 
+ * A monad differs from a monoid in that the right operand involves a binding
+ * operation.
+ * 
+ * </pre>
+ * 
+ * @author miguel.esteban@logicaalternativa.com
+ *
+ */
 
 public class MonadContainerErrorTest {
     
@@ -25,6 +43,120 @@ public class MonadContainerErrorTest {
     @After
     public void tearDown() throws Exception {
     }
+    
+    /**
+     * Left unit <pre>
+     * 
+     *  1) Compute the value a
+     *  2) bind b to the result
+     *  3) compute n
+     *  
+     *  The result is the same as n with value a substituted for variable b
+     *  
+     *  unit a * λb. n = n[a/b]
+     *  
+     *  </pre>
+     * @throws Exception
+     */
+    @Test
+    public void lawLeftUnit() throws Exception{
+    	
+    	final String expectedValue = "b";
+
+    	final Container<Error, String> contA = m.pure("a");
+		final Container<Error, String> contB = m.pure( expectedValue );
+    	
+    	final Container<Error, String> contBB = m.flatMap(
+    			contA, 
+    			a -> contB
+    			);
+    	
+    	
+    	assertEquals( contBB, contB );
+    	assertEquals( expectedValue, contBB.getValue(), contB.getValue() );
+    	
+    }
+    
+
+    
+    /**
+     * Right unit.<pre>
+     * 
+     *  1) Compute m,
+     *  2) bind the result to a
+     *  3) return a.
+     *   
+     *  The result is the same as m.
+     *  m * λa. unit a = m.
+     *  
+     * </pre>
+     * @throws Exception
+     */
+    @Test
+    public void lawRightUnit() throws Exception{
+    	
+    	final String expectedValue = "a";
+		final Container<Error,String> contA = m.pure(expectedValue);
+    	
+    	final Container<Error,String> contAA = m.flatMap(
+    			contA, 
+    			a -> m.pure( a )
+    			);
+    	
+    	assertEquals( contAA, contA );
+    	assertEquals( expectedValue, contAA.getValue(), contA.getValue() );
+    	
+    }
+    
+    /**
+     * Associative. <pre>
+     * 
+     *  1) Compute m
+     *  2) bind the result to a
+     *  3) compute n, bind the result to b
+     *  4) compute o.
+     *  
+     *   The order of parentheses in such a computation is irrelevant.
+     *    m * (λa. n * λb. o) = (m * λa. n) * λb. o
+     *        
+     * </pre>
+     * @throws Exception
+     */
+    
+    @Test
+    public void lawAsociative() throws Exception{
+
+    	final String expectedValue = "c";
+    	
+    	final Container<Error, String> contA = m.pure( "a" );
+    	final Container<Error, String> contB = m.pure( "b" );
+		final Container<Error, String> contC = m.pure( expectedValue );
+    	
+    	final Container<Error, String> contBC = m.flatMap(
+    			contB,
+    			b -> contC
+    			);
+    	
+    	final Container<Error, String> contA_BC = m.flatMap(
+    			contA, 
+    			a -> contBC 
+    			);
+    	
+    	final Container<Error, String> contAB = m.flatMap(
+    			contA,
+    			a -> contB
+    			);
+    	
+    	final  Container<Error, String> contAB_C = m.flatMap(
+    			contAB, 
+    			ab -> contC
+    			);
+    	
+    	assertEquals( contA_BC, contAB_C );
+    	assertEquals( expectedValue, contA_BC.getValue(), contAB_C.getValue() );
+    	
+    }
+    
 
     @Test
     public void pureOk() {
