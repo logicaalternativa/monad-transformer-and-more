@@ -11,7 +11,24 @@ import org.junit.Assert._
 
 import MonadContainerErrorS.ContainerError
 
-class MonadContainerErrorSTest {
+/**
+ * <pre>
+ * Monad laws from 
+ * 
+ * [Monads for functional programming](http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf)
+ * 
+ * A binary operation with left and right unit that is associative is called a 
+ * monoid.
+ * 
+ * A monad differs from a monoid in that the right operand involves a binding
+ * operation.
+ * 
+ * </pre>
+ * 
+ * @author miguel.esteban@logicaalternativa.com
+ *
+ */
+ class MonadContainerErrorSTest {
   
     val M = MonadContainerErrorS()
     
@@ -25,7 +42,116 @@ class MonadContainerErrorSTest {
         val cont : ContainerError[String] = pure( expected )
         
         assertEquals( expected, cont.getValue )
-      
+    }
+    
+    /**
+     * Left unit <pre>
+     * 
+     *  1) Compute the value a
+     *  2) bind b to the result
+     *  3) compute n
+     *  
+     *  The result is the same as n with value a substituted for variable b
+     *  
+     *  unit a * λb. n = n[a/b]
+     *  
+     *  </pre>
+     * @throws Exception
+     */
+    @Test
+    def lawLeftUnit = {
+        
+        val expectedValue = "b"
+
+        val contA = pure("a")
+        val contB = pure( expectedValue )
+        
+        val contBB = flatMap[String, String](
+                contA, 
+                a => contB
+                )
+        
+        assertEquals( contBB, contB )
+        assertEquals( expectedValue, contBB.getValue, contB.getValue )
+        
+    }
+    
+     /**
+     * Right unit.<pre>
+     * 
+     *  1) Compute m,
+     *  2) bind the result to a
+     *  3) return a.
+     *   
+     *  The result is the same as 
+     *  m * λa. unit a = 
+     *  
+     * </pre>
+     * @throws Exception
+     */
+    @Test
+    def lawRightUnit = {
+
+        val expectedValue = "a"
+        val contA = pure(expectedValue)
+
+        val contAA = flatMap[String, String](
+                        contA, 
+                        a => pure( a )
+                    )
+
+        assertEquals( contAA, contA )
+        assertEquals( expectedValue, contAA.getValue, contA.getValue )
+        
+    }
+    
+    
+    /**
+     * Associative. <pre>
+     * 
+     *  1) Compute m
+     *  2) bind the result to a
+     *  3) compute n, bind the result to b
+     *  4) compute o.
+     *  
+     *   The order of parentheses in such a computation is irrelevant.
+     *    m * (λa. n * λb. o) = (m * λa. n) * λb. o
+     *        
+     * </pre>
+     * @throws Exception
+     */    
+    @Test
+    def lawAsociative = {
+
+        val expectedValue = "c"
+
+        val contA = pure( "a" )
+        val contB = pure( "b" )
+        val contC = pure( expectedValue )
+
+        val contBC = flatMap[String, String](
+                contB,
+                b => contC
+                )
+
+        val contA_BC = flatMap[String, String](
+                contA, 
+                a => contBC 
+                )
+
+        val contAB = flatMap[String, String](
+                contA,
+                a => contB
+                )
+
+        val contAB_C = flatMap[String, String](
+                contAB, 
+                ab => contC
+                )
+        
+        assertEquals( contA_BC, contAB_C )
+        assertEquals( expectedValue, contA_BC.getValue, contAB_C.getValue )
+        
     }
   
     @Test

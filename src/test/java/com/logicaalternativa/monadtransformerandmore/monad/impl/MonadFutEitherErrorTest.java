@@ -13,6 +13,7 @@ import org.junit.Test;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 import scala.util.Either;
 import akka.dispatch.ExecutionContexts;
 import akka.dispatch.Futures;
@@ -21,9 +22,27 @@ import com.logicaalternativa.monadtransformerandmore.errors.Error;
 import com.logicaalternativa.monadtransformerandmore.errors.impl.MyError;
 
 
+/**
+ * <pre>
+ * Monad laws from 
+ * 
+ * [Monads for functional programming](http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf)
+ * 
+ * A binary operation with left and right unit that is associative is called a 
+ * monoid.
+ * 
+ * A monad differs from a monoid in that the right operand involves a binding
+ * operation.
+ * 
+ * </pre>
+ * 
+ * @author miguel.esteban@logicaalternativa.com
+ *
+ */
 public class MonadFutEitherErrorTest {
     
-    MonadFutEitherError m;
+    private static final FiniteDuration DURATION = Duration.apply(2, TimeUnit.SECONDS);
+	MonadFutEitherError m;
 
     @Before
     public void setUp() throws Exception {
@@ -35,6 +54,125 @@ public class MonadFutEitherErrorTest {
     public void tearDown() throws Exception {
     }
     
+    /**
+     * Left unit <pre>
+     * 
+     *  1) Compute the value a
+     *  2) bind b to the result
+     *  3) compute n
+     *  
+     *  The result is the same as n with value a substituted for variable b
+     *  
+     *  unit a * λb. n = n[a/b]
+     *  
+     *  </pre>
+     * @throws Exception
+     */
+    @Test
+    public void lawLeftUnit() throws Exception{
+    	
+    	final String expectedValue = "b";
+
+    	final Future<Either<Error, String>> futA = m.pure("a");
+		final Future<Either<Error, String>> futB = m.pure( expectedValue );
+    	
+    	final Future<Either<Error, String>> futBB = m.flatMap(
+    			futA, 
+    			a -> futB
+    			);
+    	
+    	final Either<Error, String> resBB = Await.result(futBB, DURATION );
+    	final Either<Error, String> resB = Await.result(futB, DURATION );
+    	
+    	assertEquals( resBB, resB );
+    	assertEquals( expectedValue, resBB.right().get(), resB.right().get() );
+    	
+    }
+    
+    /**
+     * Right unit.<pre>
+     * 
+     *  1) Compute m,
+     *  2) bind the result to a
+     *  3) return a.
+     *   
+     *  The result is the same as m.
+     *  m * λa. unit a = m.
+     *  
+     * </pre>
+     * @throws Exception
+     */
+    @Test
+    public void lawRightUnit() throws Exception{
+    	
+    	final String expectedValue = "a";
+		final Future<Either<Error, String>> futA = m.pure(expectedValue);
+    	
+    	final Future<Either<Error, String>> futAA = m.flatMap(
+    			futA, 
+    			a -> m.pure( a )
+    			);
+    	
+    	final Either<Error, String> resAA = Await.result(futAA, DURATION );
+    	final Either<Error, String> resA = Await.result(futA, DURATION );
+    	
+    	assertEquals( resAA, resA );
+    	assertEquals( expectedValue, resAA.right().get(), resA.right().get() );
+    	
+    }
+    
+    /**
+     * Associative. <pre>
+     * 
+     *  1) Compute m
+     *  2) bind the result to a
+     *  3) compute n, bind the result to b
+     *  4) compute o.
+     *  
+     *   The order of parentheses in such a computation is irrelevant.
+     *    m * (λa. n * λb. o) = (m * λa. n) * λb. o
+     *        
+     * </pre>
+     * @throws Exception
+     */
+    
+    @Test
+    public void lawAsociative() throws Exception{
+
+    	final String expectedValue = "c";
+    	
+    	final Future<Either<Error, String>> futA = m.pure( "a" );
+    	final Future<Either<Error, String>> futB = m.pure( "b" );
+		final Future<Either<Error, String>> futC = m.pure( expectedValue );
+    	
+    	final Future<Either<Error, String>> futBC = m.flatMap(
+    			futB,
+    			b -> futC
+    			);
+    	
+    	final Future<Either<Error, String>> futA_BC = m.flatMap(
+    			futA, 
+    			a -> futBC 
+    			);
+    	
+    	final Future<Either<Error, String>> futAB = m.flatMap(
+    			futA,
+    			a -> futB
+    			);
+    	
+    	final  Future<Either<Error, String>> futAB_C = m.flatMap(
+    			futAB, 
+    			ab -> futC
+    			);
+    	
+    	final Either<Error, String> resA_BC = Await.result(futA_BC, DURATION );
+    	final Either<Error, String> resAB_C = Await.result(futAB_C, DURATION );
+    	
+    	assertEquals( resA_BC, resAB_C );
+    	assertEquals( expectedValue, resA_BC.right().get(), resAB_C.right().get() );
+    	
+    }
+    
     @Test
     public void pureOk() throws Exception{
               
@@ -42,7 +180,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error, String>> fut = m.pure( expected );
         
-        final Either<Error, String> res = Await.result(fut, Duration.apply(500, TimeUnit.MILLISECONDS) );
+        final Either<Error, String> res = Await.result(fut, DURATION );
         
         assertEquals( expected, res.right().get() );
           
@@ -57,7 +195,7 @@ public class MonadFutEitherErrorTest {
             
         final Future<Either<Error, Integer>> fut =  m.flatMap( cont, v -> m.pure( v.length() ) );       
             
-        final Either<Error,Integer> res = Await.result(fut, Duration.apply(500, TimeUnit.MILLISECONDS) );
+        final Either<Error,Integer> res = Await.result(fut, DURATION );
        
         assertEquals(new Integer( expected.length() ) , res.right().get() );       
          
@@ -72,7 +210,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error, Integer>> fut =  m.flatMap( cont, v -> m.pure( v.length() ) );
         
-        final Either<Error, Integer> res = Await.result(fut, Duration.apply(500, TimeUnit.MILLISECONDS) );
+        final Either<Error, Integer> res = Await.result(fut, DURATION );
         
         assertEquals( expectedError, res.left().get().getDescription() );        
       
@@ -90,7 +228,7 @@ public class MonadFutEitherErrorTest {
             throw new RuntimeException( expectedError );
        });
         
-       final Either<Error, Integer> res = Await.result(fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+       final Either<Error, Integer> res = Await.result(fut, DURATION );
         
        assertEquals( expectedError, res.left().get().getDescription() );    
       
@@ -105,7 +243,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error, Integer>> fut  =  m.flatMap( cont, v -> m.pure( v.length() ) );  
            
-        final Either<Error, Integer> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, Integer> res = Await.result( fut, DURATION );
         
         assertEquals( expectedError, res.left().get().getDescription() );     
       
@@ -118,7 +256,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error, String>> fut = m.<String>raiseError( new MyError( expected ) );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( expected, res.left().get().getDescription() );
       
@@ -136,7 +274,7 @@ public class MonadFutEitherErrorTest {
                       e ->  m.pure( String.format("%s !!!", e.getDescription() ) )
                     );
                     
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( String.format("%s !!!",expectedError), res.right().get() );
       
@@ -154,7 +292,7 @@ public class MonadFutEitherErrorTest {
               e ->  m.pure( String.format("%s !!!", e.getDescription() ) )
             );
                     
-       final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+       final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( expected, res.right().get() );
       
@@ -173,7 +311,7 @@ public class MonadFutEitherErrorTest {
                           throw new RuntimeException( expectedError );  
                       });
                     
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( expectedError, res.left().get().getDescription() );
       
@@ -191,7 +329,7 @@ public class MonadFutEitherErrorTest {
                       e ->  m.pure( String.format("%s !!!", e.getDescription() ) )
                     );
                     
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( String.format("%s !!!", expectedError), res.right().get() );
       
@@ -207,7 +345,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error,Integer>>  fut =  m.map( cont, v -> v.length() );
         
-        final Either<Error, Integer> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, Integer> res = Await.result( fut, DURATION );
         
         assertEquals( new Integer( expected.length() ) , res.right().get() ) ; 
       
@@ -222,7 +360,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error,Integer>>  fut =  m.map( cont, v -> v.length() );
         
-        final Either<Error, Integer> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, Integer> res = Await.result( fut, DURATION );
         
         assertEquals( expectedError, res.left().get().getDescription() );        
       
@@ -239,7 +377,7 @@ public class MonadFutEitherErrorTest {
             throw new RuntimeException( expectedError );
         } );
         
-        final Either<Error, Integer> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, Integer> res = Await.result( fut, DURATION );
         
         assertEquals( expectedError, res.left().get().getDescription() );        
       
@@ -253,7 +391,7 @@ public class MonadFutEitherErrorTest {
       
         Future<Either<Error,String>> fut = m.flatten( m.pure( m.pure( value ) ) );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( value, res.right().get() );
       
@@ -271,7 +409,7 @@ public class MonadFutEitherErrorTest {
           ( o, t ) -> m.pure( String.format( "%s, %s", o, t )  )
         );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( "one, two", res.right().get() );
       
@@ -289,7 +427,7 @@ public class MonadFutEitherErrorTest {
           ( o, t ) ->  String.format( "%s, %s", o, t )        
         );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( "one, two", res.right().get() );
       
@@ -309,7 +447,7 @@ public class MonadFutEitherErrorTest {
           ( o, t, tt ) -> m.pure( String.format( "%s, %s, %s", o, t, tt )  )
         );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( "one, two, three" , res.right().get() );
       
@@ -329,7 +467,7 @@ public class MonadFutEitherErrorTest {
           ( o, t, tt ) ->  String.format( "%s, %s, %s", o, t, tt ) 
         );
         
-        final Either<Error, String> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, String> res = Await.result( fut, DURATION );
         
         assertEquals( "one, two, three" , res.right().get() );
       
@@ -342,7 +480,7 @@ public class MonadFutEitherErrorTest {
         
         final Future<Either<Error, List<String>>> fut = m.sequence( list  );
         
-        final Either<Error, List<String>> res = Await.result( fut, Duration.apply( 500, TimeUnit.MILLISECONDS ) );
+        final Either<Error, List<String>> res = Await.result( fut, DURATION );
         
         assertEquals(Arrays.asList( "one", "two" ), res.right().get() );
       
