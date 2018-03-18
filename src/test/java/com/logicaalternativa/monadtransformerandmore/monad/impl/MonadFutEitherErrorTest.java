@@ -1,6 +1,6 @@
 package com.logicaalternativa.monadtransformerandmore.monad.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -69,23 +69,30 @@ public class MonadFutEitherErrorTest {
      * @throws Exception
      */
     @Test
-    public void lawLeftUnit() throws Exception{
+    public void lawLeftUnit() throws Exception {
     	
-    	final String expectedValue = "b";
-
+    	final Future<Either<Error, String>> futB = m.pure( "b" );
+		final Future<Either<Error, String>> futBerror = m.raiseError(new MyError ("errorB"));
+    	
+    	lawLeftUnitExec( futB );
+    	lawLeftUnitExec( futBerror );
+    	
+    }
+    
+    
+    private void lawLeftUnitExec( final Future<Either<Error, String>> futB ) throws Exception {
+    	
     	final Future<Either<Error, String>> futA = m.pure("a");
-		final Future<Either<Error, String>> futB = m.pure( expectedValue );
-    	
+		
     	final Future<Either<Error, String>> futBB = m.flatMap(
-    			futA, 
-    			a -> futB
+	    			futA, 
+	    			a -> futB
     			);
     	
     	final Either<Error, String> resBB = Await.result(futBB, DURATION );
     	final Either<Error, String> resB = Await.result(futB, DURATION );
     	
     	assertEquals( resBB, resB );
-    	assertEquals( expectedValue, resBB.right().get(), resB.right().get() );
     	
     }
     
@@ -139,12 +146,32 @@ public class MonadFutEitherErrorTest {
     @Test
     public void lawAsociative() throws Exception{
 
-    	final String expectedValue = "c";
     	
     	final Future<Either<Error, String>> futA = m.pure( "a" );
     	final Future<Either<Error, String>> futB = m.pure( "b" );
-		final Future<Either<Error, String>> futC = m.pure( expectedValue );
+		final Future<Either<Error, String>> futC = m.pure( "c" );
+		
+		
+		final Future<Either<Error, String>> futAerror = m.raiseError(new MyError ("errorA"));
+    	final Future<Either<Error, String>> futBerror = m.raiseError(new MyError ("errorB"));
+    	final Future<Either<Error, String>> futCerror = m.raiseError(new MyError ("errorC"));
     	
+    	lawAsociativeExec(futA, futB, futC);
+    	lawAsociativeExec(futA, futB, futCerror);
+    	
+    	lawAsociativeExec(futA, futBerror, futC);
+    	lawAsociativeExec(futA, futBerror, futCerror);
+    	
+    	lawAsociativeExec(futAerror, futB, futC);
+    	lawAsociativeExec(futAerror, futB, futCerror);
+    	
+    	lawAsociativeExec(futAerror, futBerror, futC);
+    	lawAsociativeExec(futAerror, futBerror, futCerror);
+    	
+    }
+    
+    public void lawAsociativeExec(final Future<Either<Error, String>> futA, final Future<Either<Error, String>> futB, final Future<Either<Error, String>> futC) throws Exception{
+
     	final Future<Either<Error, String>> futBC = m.flatMap(
     			futB,
     			b -> futC
@@ -169,7 +196,6 @@ public class MonadFutEitherErrorTest {
     	final Either<Error, String> resAB_C = Await.result(futAB_C, DURATION );
     	
     	assertEquals( resA_BC, resAB_C );
-    	assertEquals( expectedValue, resA_BC.right().get(), resAB_C.right().get() );
     	
     }
     

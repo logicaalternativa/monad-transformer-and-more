@@ -61,18 +61,25 @@ import MonadContainerErrorS.ContainerError
     @Test
     def lawLeftUnit = {
         
-        val expectedValue = "b"
-
+        val contB = pure("b")
+        val contBerror : Container[Error, String] = raiseError( new MyError ( "errorB" ) )
+        
+        lawLeftUnitExec( contB );
+        lawLeftUnitExec( contBerror );
+        
+    }
+    
+    
+    private def lawLeftUnitExec( contB : Container[Error, String] ) = {
+        
         val contA = pure("a")
-        val contB = pure( expectedValue )
         
         val contBB = flatMap[String, String](
-                contA, 
-                a => contB
+                    contA, 
+                    a => contB
                 )
         
-        assertEquals( contBB, contB )
-        assertEquals( expectedValue, contBB.getValue, contB.getValue )
+        assertEquals( contBB.getValue, contB.getValue )
         
     }
     
@@ -122,13 +129,32 @@ import MonadContainerErrorS.ContainerError
      */    
     @Test
     def lawAsociative = {
-
-        val expectedValue = "c"
-
+        
         val contA = pure( "a" )
         val contB = pure( "b" )
-        val contC = pure( expectedValue )
+        val contC = pure( "c" )
 
+        val contAerror : Container[Error, String] = raiseError( new MyError ( "errorA" ) )
+        val contBerror : Container[Error, String] = raiseError( new MyError ( "errorB" ) )
+        val contCerror : Container[Error, String] = raiseError( new MyError ( "errorC" ) )
+
+        lawAsociativeExec(contA, contB, contC);
+        lawAsociativeExec(contA, contB, contCerror);
+
+        lawAsociativeExec(contA, contBerror, contC);
+        lawAsociativeExec(contA, contBerror, contCerror);
+
+        lawAsociativeExec(contAerror, contB, contC);
+        lawAsociativeExec(contAerror, contB, contCerror);
+
+        lawAsociativeExec(contAerror, contBerror, contC);
+        lawAsociativeExec(contAerror, contBerror, contCerror);
+        
+    }
+    
+    private def lawAsociativeExec( contA : Container[Error, String], contB : Container[Error, String], contC : Container[Error, String] ) = {
+
+        
         val contBC = flatMap[String, String](
                 contB,
                 b => contC
@@ -149,8 +175,7 @@ import MonadContainerErrorS.ContainerError
                 ab => contC
                 )
         
-        assertEquals( contA_BC, contAB_C )
-        assertEquals( expectedValue, contA_BC.getValue, contAB_C.getValue )
+        assertEquals( contA_BC.getValue, contAB_C.getValue )
         
     }
   
@@ -178,8 +203,7 @@ import MonadContainerErrorS.ContainerError
         
         assertEquals( expectedError, res.getError.getDescription )        
       
-    }   
-    
+    }
   
     @Test
     def flatMapException : Unit = {
