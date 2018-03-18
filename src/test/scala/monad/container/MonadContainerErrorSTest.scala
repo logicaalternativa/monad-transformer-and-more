@@ -67,8 +67,7 @@ import MonadContainerErrorS.ContainerError
         lawLeftUnitExec( contB );
         lawLeftUnitExec( contBerror );
         
-    }
-    
+    }    
     
     private def lawLeftUnitExec( contB : Container[Error, String] ) = {
         
@@ -99,16 +98,23 @@ import MonadContainerErrorS.ContainerError
     @Test
     def lawRightUnit = {
 
-        val expectedValue = "a"
-        val contA = pure(expectedValue)
+        val contA = pure( "a" )
+        val contAerror : Container[Error, String] = raiseError( new MyError ( "errorA" ) )
+        
+        lawRightUnitExec( contA )
+        lawRightUnitExec( contAerror )
+        
+    }
+    
+    private def lawRightUnitExec( contA : Container[Error,String] ) = {
 
+        
         val contAA = flatMap[String, String](
                         contA, 
                         a => pure( a )
                     )
 
         assertEquals( contAA, contA )
-        assertEquals( expectedValue, contAA.getValue, contA.getValue )
         
     }
     
