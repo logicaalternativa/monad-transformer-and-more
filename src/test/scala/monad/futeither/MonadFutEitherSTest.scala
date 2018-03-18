@@ -67,10 +67,17 @@ object MonadFutEitherSTest {
     @Test
     def lawLeftUnit = {
         
-        val expectedValue = "b"
-
+        val futB = pure( "b" )
+        val futBerror = raiseError( new MyError( "errorB" ) )
+        
+        lawLeftUnitExec( futB )
+        lawLeftUnitExec( futBerror )
+        
+    }
+    
+    private def lawLeftUnitExec( futB : FutEitherError[String] ) = {
+        
         val futA = pure("a")
-        val futB = pure( expectedValue )
         
         val futBB = flatMap[String, String](
                 futA, 
@@ -80,8 +87,7 @@ object MonadFutEitherSTest {
         val resBB = result(futBB, Duration )
         val resB = result(futB, Duration )
         
-        assertEquals( resBB, resB )
-        assertEquals( expectedValue, resBB.right.get, resB.right.get )
+        assertEquals( resBB.right.get, resB.right.get )
         
     }
     
@@ -135,11 +141,29 @@ object MonadFutEitherSTest {
     @Test
     def lawAsociative = {
 
-        val expectedValue = "c"
-
         val futA = pure( "a" )
         val futB = pure( "b" )
-        val futC = pure( expectedValue )
+        val futC = pure( "c" )
+        
+        val futAerror = raiseError(new MyError ("errorA"))
+        val futBerror = raiseError(new MyError ("errorB"))
+        val futCerror = raiseError(new MyError ("errorC"))
+        
+        lawAsociativeExec(futA, futB, futC)
+        lawAsociativeExec(futA, futB, futCerror)
+        
+        lawAsociativeExec(futA, futBerror, futC)
+        lawAsociativeExec(futA, futBerror, futCerror)
+        
+        lawAsociativeExec(futAerror, futB, futC)
+        lawAsociativeExec(futAerror, futB, futCerror)
+        
+        lawAsociativeExec(futAerror, futBerror, futC)
+        lawAsociativeExec(futAerror, futBerror, futCerror)
+        
+    }
+    
+    private def lawAsociativeExec( futA : FutEitherError[String], futB : FutEitherError[String], futC : FutEitherError[String] ) = {
 
         val futBC = flatMap[String, String](
                 futB,
@@ -165,8 +189,7 @@ object MonadFutEitherSTest {
         val resAB_C = result(futAB_C, Duration )
 
         assertEquals( resA_BC, resAB_C )
-        assertEquals( expectedValue, resA_BC.right.get, resAB_C.right.get )
-        
+
     }
     
     @Test

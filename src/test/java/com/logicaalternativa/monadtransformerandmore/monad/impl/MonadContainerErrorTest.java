@@ -61,10 +61,18 @@ public class MonadContainerErrorTest {
     @Test
     public void lawLeftUnit() throws Exception{
     	
-    	final String expectedValue = "b";
-
+    	final Container<Error, String> contB = m.pure( "b" );
+		final Container<Error, String> contBerror = m.raiseError(new MyError ("errorB"));
+		
+    	lawLeftUnitExec( contB );
+    	lawLeftUnitExec( contBerror );
+		
+		
+    }
+    
+    private void lawLeftUnitExec( final Container<Error, String> contB ) throws Exception{
+    	
     	final Container<Error, String> contA = m.pure("a");
-		final Container<Error, String> contB = m.pure( expectedValue );
     	
     	final Container<Error, String> contBB = m.flatMap(
     			contA, 
@@ -73,11 +81,8 @@ public class MonadContainerErrorTest {
     	
     	
     	assertEquals( contBB, contB );
-    	assertEquals( expectedValue, contBB.getValue(), contB.getValue() );
     	
     }
-    
-
     
     /**
      * Right unit.<pre>
@@ -123,14 +128,35 @@ public class MonadContainerErrorTest {
      * @throws Exception
      */
     
+    
     @Test
-    public void lawAsociative() throws Exception{
-
-    	final String expectedValue = "c";
+    public void lawAsociative() {
     	
     	final Container<Error, String> contA = m.pure( "a" );
     	final Container<Error, String> contB = m.pure( "b" );
-		final Container<Error, String> contC = m.pure( expectedValue );
+    	final Container<Error, String> contC = m.pure( "c" );
+    	
+    	final Container<Error, String> contAerror = m.raiseError(new MyError ("errorA"));
+    	final Container<Error, String> contBerror = m.raiseError(new MyError ("errorB"));
+    	final Container<Error, String> contCerror = m.raiseError(new MyError ("errorC"));
+    	
+    	lawAsociativeExec(contA, contB, contC);
+    	lawAsociativeExec(contA, contB, contCerror);
+    	
+    	lawAsociativeExec(contA, contBerror, contC);
+    	lawAsociativeExec(contA, contBerror, contCerror);
+    	
+    	lawAsociativeExec(contAerror, contB, contC);
+    	lawAsociativeExec(contAerror, contB, contCerror);
+    	
+    	lawAsociativeExec(contAerror, contBerror, contC);
+    	lawAsociativeExec(contAerror, contBerror, contCerror);
+    	
+    	
+    }
+    
+    private void lawAsociativeExec(final Container<Error, String> contA, final Container<Error, String> contB, final Container<Error, String> contC) {
+
     	
     	final Container<Error, String> contBC = m.flatMap(
     			contB,
@@ -153,7 +179,7 @@ public class MonadContainerErrorTest {
     			);
     	
     	assertEquals( contA_BC, contAB_C );
-    	assertEquals( expectedValue, contA_BC.getValue(), contAB_C.getValue() );
+    	
     	
     }
     
