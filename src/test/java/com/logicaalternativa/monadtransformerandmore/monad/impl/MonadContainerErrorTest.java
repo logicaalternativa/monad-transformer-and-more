@@ -100,8 +100,15 @@ public class MonadContainerErrorTest {
     @Test
     public void lawRightUnit() throws Exception{
     	
-    	final String expectedValue = "a";
-		final Container<Error,String> contA = m.pure(expectedValue);
+    	final Container<Error,String> contA = m.pure( "a" );
+    	final Container<Error, String> contAerror = m.raiseError(new MyError ("errorA"));
+    	
+    	lawRightUnitExec( contA );
+    	lawRightUnitExec( contAerror );
+    	    	
+    }
+    
+    private void lawRightUnitExec( final Container<Error,String> contA ) throws Exception{
     	
     	final Container<Error,String> contAA = m.flatMap(
     			contA, 
@@ -109,7 +116,6 @@ public class MonadContainerErrorTest {
     			);
     	
     	assertEquals( contAA, contA );
-    	assertEquals( expectedValue, contAA.getValue(), contA.getValue() );
     	
     }
     

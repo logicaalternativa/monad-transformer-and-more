@@ -102,13 +102,19 @@ object MonadFutEitherSTest {
      *  m * λa. unit a = 
      *  
      * </pre>
-     * @throws Exception
      */
     @Test
     def lawRightUnit = {
 
-        val expectedValue = "a"
-        val futA = pure(expectedValue)
+        val futA = pure( "a" )
+        val futAerror = raiseError(new MyError ("errorA"))
+        
+        lawRightUnitExec( futA )
+        lawRightUnitExec( futAerror )
+        
+    }
+    
+    private def lawRightUnitExec( futA : FutEitherError[String] ) = {
 
         val futAA = flatMap[String, String](
                         futA, 
@@ -119,7 +125,6 @@ object MonadFutEitherSTest {
         val resA = result(futA, Duration )
 
         assertEquals( resAA, resA )
-        assertEquals( expectedValue, resAA.right.get, resA.right.get )
         
     }
     

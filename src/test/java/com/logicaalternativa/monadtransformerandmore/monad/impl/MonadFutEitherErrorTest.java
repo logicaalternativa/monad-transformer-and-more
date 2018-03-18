@@ -112,8 +112,15 @@ public class MonadFutEitherErrorTest {
     @Test
     public void lawRightUnit() throws Exception{
     	
-    	final String expectedValue = "a";
-		final Future<Either<Error, String>> futA = m.pure(expectedValue);
+    	final Future<Either<Error, String>> futA = m.pure("a");
+    	final Future<Either<Error, String>> futAerror = m.raiseError(new MyError ("errorA"));
+    	
+    	lawRightUnitExec(futA);
+    	lawRightUnitExec(futAerror);
+    	
+    }
+    
+    private void lawRightUnitExec( final Future<Either<Error, String>> futA ) throws Exception{
     	
     	final Future<Either<Error, String>> futAA = m.flatMap(
     			futA, 
@@ -124,9 +131,9 @@ public class MonadFutEitherErrorTest {
     	final Either<Error, String> resA = Await.result(futA, DURATION );
     	
     	assertEquals( resAA, resA );
-    	assertEquals( expectedValue, resAA.right().get(), resA.right().get() );
     	
     }
+    
     
     /**
      * Associative. <pre>
