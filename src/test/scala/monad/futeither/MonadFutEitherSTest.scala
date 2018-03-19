@@ -87,7 +87,7 @@ object MonadFutEitherSTest {
         val resBB = result(futBB, Duration )
         val resB = result(futB, Duration )
         
-        assertEquals( resBB.right.get, resB.right.get )
+        assertEquals( resBB, resB )
         
     }
     
