@@ -3,10 +3,10 @@ package com.logicaalternativa.monadtransformerandmore.monad;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.logicaalternativa.monadtransformerandmore.function.Function3;
-
 import scala.concurrent.Future;
 import scala.util.Either;
+
+import com.logicaalternativa.monadtransformerandmore.function.Function3;
 
 public class MonadFutEitherWrapper<E,T> {
 	
