@@ -8,6 +8,7 @@ import service._
 import monad.syntax.Implicits._
 
 import java.util.Optional
+import scala.collection.JavaConverters._
 
 trait SrvSummaryF[E,P[_]] {
   
@@ -22,7 +23,33 @@ trait SrvSummaryF[E,P[_]] {
   
   def getSummary( idBook: Int) : P[Summary] = {
     
-     ???
+    
+    val bookP = srvBook.getBook( idBook ) 
+    val salesP = srvSales.getSales( idBook )
+                  .map( Optional.of(_) )
+                  .recover( _ => Optional.empty[Sales] )
+                
+    
+    
+    for{
+        
+        sales  <- salesP  
+        book   <- bookP
+        author <- srvAuthor.getAuthor( book.getIdAuthor )
+        listC  <- sequence( 
+                    book.getChapters.asScala.toList.map{
+                      ch => srvChapter.getChapter( ch )
+                    }
+                  )
+      
+    } yield( new Summary( book, listC.asJava, sales, author ) )
+    
+    
+    //~ srvBook.getBook( idBook ).flatMap( (book : Book) => ??? )
+    
+    
+    
+    ???
     
   } 
   

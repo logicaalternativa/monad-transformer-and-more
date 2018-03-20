@@ -99,7 +99,7 @@ object MonadFutEitherSTest {
      *  3) return a.
      *   
      *  The result is the same as 
-     *  m * λa. unit a = 
+     *  m * λa. unit a = m
      *  
      * </pre>
      */
