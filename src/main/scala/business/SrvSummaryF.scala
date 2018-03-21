@@ -28,30 +28,65 @@ trait SrvSummaryF[E,P[_]] {
     val salesP = srvSales.getSales( idBook )
                   .map( Optional.of(_) )
                   .recover( _ => Optional.empty[Sales] )
-                
-    
-    
-    for{
+                  
+                  
+    val res = bookP >>= {
         
-        sales  <- salesP  
-        book   <- bookP
-        author <- srvAuthor.getAuthor( book.getIdAuthor )
-        listC  <- sequence( 
+        book => {
+          
+           val authorP  = srvAuthor.getAuthor( book.getIdAuthor )
+    
+           val listP = sequence( 
                     book.getChapters.asScala.toList.map{
                       ch => srvChapter.getChapter( ch )
                     }
                   )
-      
-    } yield( new Summary( book, listC.asJava, sales, author ) )
+                  
+           ( listP |@| salesP |@| authorP ) {
+             
+              ( listC, sales, author ) => new Summary( book, listC.asJava, sales, author )
+             
+             
+            }
+          
+          
+        }
+       
+       
+    }
+                
+    //~ val res = for {
+        //~ 
+        //~ sales  <- salesP  
+        //~ book   <- bookP
+        //~ summary  <- createSummary( book, sales )      
+        //~ 
+    //~ } yield( summary )
     
-    
-    //~ srvBook.getBook( idBook ).flatMap( (book : Book) => ??? )
-    
-    
-    
-    ???
-    
+    res.recoverWith {
+      _ =>  raiseError( getGenericError( "It is impossible to get book summary" ) ) 
+    }
   } 
+  
+  private def createSummary( book: Book, sales : Optional[Sales] ) : P[Summary] = {
+    
+    val authorP  = srvAuthor.getAuthor( book.getIdAuthor )
+    
+    val listP = sequence( 
+                    book.getChapters.asScala.toList.map{
+                      ch => srvChapter.getChapter( ch )
+                    }
+                  )
+     for {
+       
+       author <- authorP
+       listC <- listP
+              
+      }  yield( new Summary( book, listC.asJava, sales, author ) )            
+                  
+    
+    
+  }
   
   protected[SrvSummaryF] def getGenericError( s : String ) : E
   
